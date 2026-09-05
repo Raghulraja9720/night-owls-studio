@@ -81,7 +81,7 @@ export function ProjectModal({ projectId, onClose, onRequestProject }) {
                 <span className="mockup-status-label">Live Site ↗</span>
               </a>
             </div>
-            <img src={data.image} alt={data.title} className="modal-project-img" />
+            <img src={data.image} alt={data.title} className="modal-project-img" loading="lazy" decoding="async" />
           </div>
 
           <div className="modal-content-wrap">

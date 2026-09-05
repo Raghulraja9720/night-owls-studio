@@ -110,6 +110,9 @@ export default function Team() {
                     className="team-avatar-img"
                     style={{ objectPosition: member.objectPosition || 'center 15%' }}
                     loading="lazy"
+                    decoding="async"
+                    width="140"
+                    height="140"
                   />
                   <div className="team-badge-icon" aria-label={member.role}>
                     <IconComponent size={16} />

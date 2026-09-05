@@ -157,7 +157,7 @@ export default function Hero({ onExploreWorks, onBookConsultation }) {
 
             <div className="hero-card-body">
               <div className="owl-emblem-wrap">
-                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Emblem" className="hero-owl-image" />
+                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Emblem" className="hero-owl-image" width="112" height="112" fetchPriority="high" decoding="async" />
               </div>
               <div className="live-activity-box">
                 <div className="activity-row">

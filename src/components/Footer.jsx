@@ -22,7 +22,7 @@ export default function Footer({ onOpenPolicy, onSelectService, onNavigate }) {
               onClick={(e) => handleFooterNav(e, 'home', 'hero')}
             >
               <div className="logo-image-wrap footer-logo-wrap">
-                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" />
+                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" loading="lazy" decoding="async" />
               </div>
               <div className="brand-text">
                 <span className="brand-title text-white">Night Owls</span>

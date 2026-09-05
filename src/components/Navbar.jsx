@@ -54,7 +54,7 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
             onClick={(e) => handleNavClick(e, 'home', 'hero')}
           >
             <div className="logo-image-wrap">
-              <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" />
+              <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" decoding="async" />
             </div>
             <div className="brand-text">
               <span className="brand-title">Night Owls</span>
@@ -164,7 +164,7 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
             onClick={(e) => handleNavClick(e, 'home', 'hero')}
           >
             <div className="logo-image-wrap">
-              <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" />
+              <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" decoding="async" />
             </div>
             <div className="brand-text">
               <span className="brand-title">Night Owls</span>

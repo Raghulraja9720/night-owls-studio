@@ -164,6 +164,9 @@ export default function Portfolio({ onSelectProject, onRequestProject, isStandal
                   alt={project.name}
                   className="project-img flagship-img"
                   loading="lazy"
+                  decoding="async"
+                  width="1024"
+                  height="521"
                 />
 
                 {/* Interactive Glassmorphic Hover Overlay */}
