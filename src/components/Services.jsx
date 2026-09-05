@@ -214,7 +214,7 @@ export default function Services({ onSelectService }) {
     }, resumeDelay);
   };
 
-  const smoothScrollTo = (targetX, duration = 400) => {
+  const smoothScrollTo = (targetX, duration = 350, onComplete) => {
     const container = trackWrapperRef.current;
     if (!container) return;
 
@@ -238,6 +238,7 @@ export default function Services({ onSelectService }) {
       } else {
         container.scrollLeft = targetX;
         animFrameRef.current = null;
+        if (onComplete) onComplete();
       }
     };
 
@@ -245,28 +246,33 @@ export default function Services({ onSelectService }) {
   };
 
   const handleNext = () => {
-    pauseAutoScroll(3500);
+    isPausedRef.current = true;
     const container = trackWrapperRef.current;
     if (!container) return;
     const cards = container.querySelectorAll('.marquee-card');
     if (!cards.length) return;
 
     const cardStep = cards[1] ? (cards[1].offsetLeft - cards[0].offsetLeft) : 320;
-    smoothScrollTo(container.scrollLeft + cardStep, 450);
+    smoothScrollTo(container.scrollLeft + cardStep, 350, () => {
+      isPausedRef.current = false;
+    });
   };
 
   const handlePrev = () => {
-    pauseAutoScroll(3500);
+    isPausedRef.current = true;
     const container = trackWrapperRef.current;
     if (!container) return;
     const cards = container.querySelectorAll('.marquee-card');
     if (!cards.length) return;
 
     const cardStep = cards[1] ? (cards[1].offsetLeft - cards[0].offsetLeft) : 320;
-    smoothScrollTo(container.scrollLeft - cardStep, 450);
+    smoothScrollTo(container.scrollLeft - cardStep, 350, () => {
+      isPausedRef.current = false;
+    });
   };
 
   const handleTouchStart = (e) => {
+    // When touched: pause immediately
     isPausedRef.current = true;
     hasDraggedRef.current = false;
     if (e.touches && e.touches[0]) {
@@ -291,7 +297,8 @@ export default function Services({ onSelectService }) {
   };
 
   const handleTouchEnd = () => {
-    pauseAutoScroll(2500);
+    // When touch is released: immediately resume running continuously
+    isPausedRef.current = false;
   };
 
   const handleCardClick = (serviceTitle) => {
@@ -477,9 +484,12 @@ export default function Services({ onSelectService }) {
           className="services-marquee-wrapper"
           onMouseEnter={() => { isPausedRef.current = true; }}
           onMouseLeave={() => { isPausedRef.current = false; }}
+          onPointerDown={() => { isPausedRef.current = true; }}
+          onPointerUp={() => { isPausedRef.current = false; }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
           onScroll={handleScroll}
         >
           <div className="services-marquee-track">
