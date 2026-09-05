@@ -24,17 +24,17 @@ export default function About() {
 
           <div className="about-card">
             <div className="about-icon-box"><MessageSquareHeart size={24} /></div>
-            <h3 className="about-card-title">Zero Bloat, Zero Jargon</h3>
+            <h3 className="about-card-title">We Help You Get Found</h3>
             <p className="about-card-text">
-              No cumbersome agency layers or vanity buzzwords. You get clean architecture, direct technical communication, and transparent weekly sprint outcomes.
+              We provide SEO, Meta Ads, and social media marketing to help your business reach the right audience.
             </p>
           </div>
 
           <div className="about-card">
             <div className="about-icon-box"><ShieldCheck size={24} /></div>
-            <h3 className="about-card-title">High-Touch Strategic Partnership</h3>
+            <h3 className="about-card-title">We Make Your Brand Stand Out</h3>
             <p className="about-card-text">
-              We limit active client engagements to deliver obsessive craftsmanship, sub-second load times, and direct partner access across WhatsApp and call.
+              We create engaging social media content and professional video editing to give your business a strong online presence.
             </p>
           </div>
         </div>
