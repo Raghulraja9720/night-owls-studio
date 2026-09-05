@@ -134,12 +134,21 @@ const servicesData = [
   }
 ];
 
-function ServiceCard({ svc, onSelect }) {
+function ServiceCard({ svc, isActive, onCardClick, onSelect }) {
   const IconComponent = svc.icon;
   return (
     <div
-      className="service-card marquee-card is-visible"
-      onClick={() => onSelect(svc.title)}
+      className={`service-card marquee-card is-visible ${isActive ? 'card-active' : ''}`}
+      onClick={onCardClick}
+      role="button"
+      tabIndex={0}
+      aria-current={isActive ? 'true' : undefined}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onCardClick();
+        }
+      }}
     >
       {/* Card Top: Icon & Number */}
       <div className="service-card-top">
@@ -187,137 +196,163 @@ function ServiceCard({ svc, onSelect }) {
 
 export default function Services({ onSelectService }) {
   const [isVisible, setIsVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(servicesData.length); // Start at Set 2, item 0
   const sectionRef = useRef(null);
   const trackWrapperRef = useRef(null);
   const isPausedRef = useRef(false);
   const pauseTimerRef = useRef(null);
-
-  const targetScrollRef = useRef(null);
   const animFrameRef = useRef(null);
-
-  // Dynamically compute exact card step based on live DOM rendering
-  const getCardStep = () => {
-    const container = trackWrapperRef.current;
-    if (container) {
-      const cards = container.querySelectorAll('.marquee-card');
-      if (cards.length >= 2) {
-        const first = cards[0].getBoundingClientRect();
-        const second = cards[1].getBoundingClientRect();
-        const step = Math.round(second.left - first.left);
-        if (step > 0) return step;
-      }
-    }
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 640;
-    return isMobile ? 324 : 384;
-  };
-
-  const getSingleSetWidth = () => {
-    const step = getCardStep();
-    return servicesData.length * step;
-  };
-
-  const getDuration = () => {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-    return isMobile ? 460 : 580;
-  };
 
   const pauseAutoScrollTemporarily = () => {
     isPausedRef.current = true;
     if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
     pauseTimerRef.current = setTimeout(() => {
       isPausedRef.current = false;
-    }, 5000);
+    }, 6000);
   };
 
-  const smoothScrollBy = (distance, duration = 540) => {
+  const smoothScrollTo = (targetX, duration = 500) => {
     const container = trackWrapperRef.current;
     if (!container) return;
-
-    pauseAutoScrollTemporarily();
-
-    const singleSet = getSingleSetWidth();
-    const step = getCardStep();
 
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = null;
     }
 
-    let startX = container.scrollLeft;
-
-    // Seamless buffer check before moving
-    if (startX >= singleSet * 2 && distance > 0) {
-      startX -= singleSet;
-      container.scrollLeft = startX;
-    } else if (startX < step + 20 && distance < 0) {
-      startX += singleSet;
-      container.scrollLeft = startX;
-    }
-
-    const targetX = startX + distance;
-    targetScrollRef.current = targetX;
+    const startX = container.scrollLeft;
+    const distance = targetX - startX;
     const startTime = performance.now();
-
-    // Silky smooth easeOutQuart curve tuned for high-refresh mobile & desktop displays
     const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
 
-    const stepFrame = (now) => {
+    const step = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const eased = easeOutQuart(progress);
-
-      container.scrollLeft = startX + distance * eased;
+      container.scrollLeft = startX + distance * easeOutQuart(progress);
 
       if (progress < 1) {
-        animFrameRef.current = requestAnimationFrame(stepFrame);
+        animFrameRef.current = requestAnimationFrame(step);
       } else {
         container.scrollLeft = targetX;
-        if (container.scrollLeft >= singleSet * 2) {
-          container.scrollLeft -= singleSet;
-        } else if (container.scrollLeft < step + 20) {
-          container.scrollLeft += singleSet;
-        }
-        targetScrollRef.current = null;
         animFrameRef.current = null;
       }
     };
 
-    animFrameRef.current = requestAnimationFrame(stepFrame);
+    animFrameRef.current = requestAnimationFrame(step);
+  };
+
+  const centerCard = (cardIdx, smooth = true) => {
+    const container = trackWrapperRef.current;
+    if (!container) return;
+    const cards = container.querySelectorAll('.marquee-card');
+    if (cardIdx >= 0 && cardIdx < cards.length) {
+      const card = cards[cardIdx];
+      const targetLeft = Math.round(card.offsetLeft - (container.clientWidth - card.offsetWidth) / 2);
+
+      if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+        if (smooth) {
+          container.scrollTo({
+            left: targetLeft,
+            behavior: 'smooth'
+          });
+        } else {
+          container.scrollLeft = targetLeft;
+        }
+      } else {
+        if (smooth) {
+          smoothScrollTo(targetLeft, 520);
+        } else {
+          container.scrollLeft = targetLeft;
+        }
+      }
+    }
+  };
+
+  const handleCardClick = (idx, serviceTitle) => {
+    if (activeIndex !== idx) {
+      pauseAutoScrollTemporarily();
+      setActiveIndex(idx);
+      centerCard(idx, true);
+    } else {
+      handleServiceClick(serviceTitle);
+    }
   };
 
   const handleNext = () => {
-    smoothScrollBy(getCardStep(), getDuration());
+    pauseAutoScrollTemporarily();
+    const container = trackWrapperRef.current;
+    if (!container) return;
+    const cards = container.querySelectorAll('.marquee-card');
+    let nextIdx = activeIndex + 1;
+    if (nextIdx >= cards.length - 2) {
+      const loopedIdx = (nextIdx % servicesData.length) + servicesData.length;
+      centerCard(loopedIdx, false);
+      nextIdx = loopedIdx + 1;
+    }
+    setActiveIndex(nextIdx);
+    centerCard(nextIdx, true);
   };
 
   const handlePrev = () => {
-    smoothScrollBy(-getCardStep(), getDuration());
+    pauseAutoScrollTemporarily();
+    const container = trackWrapperRef.current;
+    if (!container) return;
+    let prevIdx = activeIndex - 1;
+    if (prevIdx < 2) {
+      const loopedIdx = (prevIdx % servicesData.length) + servicesData.length;
+      centerCard(loopedIdx, false);
+      prevIdx = loopedIdx - 1;
+    }
+    setActiveIndex(prevIdx);
+    centerCard(prevIdx, true);
   };
 
-  // Immediate cancellation on finger contact so manual touch scrolling has zero resistance
   const handleTouchStart = () => {
     isPausedRef.current = true;
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = null;
     }
-    targetScrollRef.current = null;
   };
 
   const handleTouchEnd = () => {
     pauseAutoScrollTemporarily();
+    setTimeout(() => {
+      const container = trackWrapperRef.current;
+      if (!container) return;
+      const setLen = servicesData.length;
+      setActiveIndex((curr) => {
+        if (curr < setLen || curr >= setLen * 2) {
+          const normalized = (curr % setLen) + setLen;
+          centerCard(normalized, false);
+          return normalized;
+        }
+        return curr;
+      });
+    }, 400);
   };
 
-  // Normalize seamless buffer during continuous manual swipe
   const handleScroll = () => {
     const container = trackWrapperRef.current;
     if (!container) return;
 
-    if (targetScrollRef.current === null) {
-      const singleSet = getSingleSetWidth();
-      if (container.scrollLeft >= singleSet * 2) {
-        container.scrollLeft -= singleSet;
-      } else if (container.scrollLeft < 40) {
-        container.scrollLeft += singleSet;
+    if (animFrameRef.current === null) {
+      const containerCenter = container.scrollLeft + container.clientWidth / 2;
+      const cards = container.querySelectorAll('.marquee-card');
+      let closestIdx = activeIndex;
+      let minDistance = Infinity;
+
+      cards.forEach((card, idx) => {
+        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+        const dist = Math.abs(containerCenter - cardCenter);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closestIdx = idx;
+        }
+      });
+
+      if (closestIdx !== activeIndex && minDistance < 160) {
+        setActiveIndex(closestIdx);
       }
     }
   };
@@ -341,13 +376,33 @@ export default function Services({ onSelectService }) {
     return () => observer.disconnect();
   }, []);
 
-  // Smooth continuous auto-scroll with seamless wrap
+  // Initial centering on mount
+  useEffect(() => {
+    const initialIndex = servicesData.length;
+    setActiveIndex(initialIndex);
+    const timer = setTimeout(() => {
+      centerCard(initialIndex, false);
+    }, 60);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Window resize re-centering
+  useEffect(() => {
+    const handleResize = () => {
+      centerCard(activeIndex, false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [activeIndex]);
+
+  // Desktop gentle auto-drift (disabled on touch/mobile devices)
   useEffect(() => {
     const container = trackWrapperRef.current;
     if (!container) return;
 
-    const singleSet = getSingleSetWidth();
-    container.scrollLeft = singleSet;
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      return;
+    }
 
     let animId;
     let lastTime = performance.now();
@@ -356,10 +411,14 @@ export default function Services({ onSelectService }) {
       const delta = time - lastTime;
       lastTime = time;
 
-      if (!isPausedRef.current && targetScrollRef.current === null && container) {
-        container.scrollLeft += (26 * delta) / 1000;
-        if (container.scrollLeft >= singleSet * 2) {
-          container.scrollLeft -= singleSet;
+      if (!isPausedRef.current && animFrameRef.current === null && container) {
+        container.scrollLeft += (22 * delta) / 1000;
+        const totalCards = container.querySelectorAll('.marquee-card');
+        if (totalCards.length > 0) {
+          const singleSetWidth = servicesData.length * (totalCards[0].offsetWidth + 24);
+          if (container.scrollLeft >= singleSetWidth * 2) {
+            container.scrollLeft -= singleSetWidth;
+          }
         }
       }
       animId = requestAnimationFrame(loop);
@@ -378,6 +437,9 @@ export default function Services({ onSelectService }) {
     }
   };
 
+  const currentDisplayNum = String((activeIndex % servicesData.length) + 1).padStart(2, '0');
+  const totalDisplayNum = String(servicesData.length).padStart(2, '0');
+
   return (
     <section id="services" ref={sectionRef} className="section light-theme bg-light">
       <div className="container">
@@ -394,7 +456,7 @@ export default function Services({ onSelectService }) {
             </p>
           </div>
 
-          {/* Top-Right Next and Prev Navigation Controls */}
+          {/* Carousel Navigation with Live Counter */}
           <div className="services-carousel-nav" aria-label="Services carousel navigation">
             <button
               type="button"
@@ -405,6 +467,11 @@ export default function Services({ onSelectService }) {
             >
               <ChevronLeft size={20} />
             </button>
+            <div className="carousel-counter-badge" aria-live="polite">
+              <span className="counter-current">{currentDisplayNum}</span>
+              <span className="counter-sep">/</span>
+              <span className="counter-total">{totalDisplayNum}</span>
+            </div>
             <button
               type="button"
               className="carousel-arrow-btn next-btn"
@@ -417,7 +484,7 @@ export default function Services({ onSelectService }) {
           </div>
         </div>
 
-        {/* Interactive Infinite Carousel Track */}
+        {/* Interactive Carousel Track */}
         <div
           ref={trackWrapperRef}
           className="services-marquee-wrapper"
@@ -429,27 +496,33 @@ export default function Services({ onSelectService }) {
         >
           <div className="services-marquee-track">
             {/* Set 1 */}
-            {servicesData.map((svc) => (
+            {servicesData.map((svc, i) => (
               <ServiceCard
                 key={`s1-${svc.id}`}
                 svc={svc}
-                onSelect={handleServiceClick}
+                isActive={activeIndex === i}
+                onCardClick={() => handleCardClick(i, svc.title)}
+                onSelect={() => handleServiceClick(svc.title)}
               />
             ))}
             {/* Set 2: Exact Clone for Infinite Seamless Continuity */}
-            {servicesData.map((svc) => (
+            {servicesData.map((svc, i) => (
               <ServiceCard
                 key={`s2-${svc.id}`}
                 svc={svc}
-                onSelect={handleServiceClick}
+                isActive={activeIndex === (servicesData.length + i)}
+                onCardClick={() => handleCardClick(servicesData.length + i, svc.title)}
+                onSelect={() => handleServiceClick(svc.title)}
               />
             ))}
             {/* Set 3: Buffer for Reverse/Forward Wrap */}
-            {servicesData.map((svc) => (
+            {servicesData.map((svc, i) => (
               <ServiceCard
                 key={`s3-${svc.id}`}
                 svc={svc}
-                onSelect={handleServiceClick}
+                isActive={activeIndex === (servicesData.length * 2 + i)}
+                onCardClick={() => handleCardClick(servicesData.length * 2 + i, svc.title)}
+                onSelect={() => handleServiceClick(svc.title)}
               />
             ))}
           </div>
