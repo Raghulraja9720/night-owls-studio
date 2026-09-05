@@ -440,17 +440,23 @@ ul {
 .mobile-toggle {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  width: 26px;
-  height: 18px;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 8px;
+  border-radius: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  margin-right: -8px;
 }
 
 .mobile-toggle .bar {
-  width: 100%;
+  width: 22px;
   height: 2px;
   background-color: #ffffff;
   border-radius: 2px;
@@ -508,17 +514,20 @@ ul {
 .mobile-drawer {
   position: fixed;
   top: 0;
-  right: -300px;
-  width: 280px;
+  right: -320px;
+  width: min(300px, 86vw);
   height: 100vh;
+  height: 100dvh;
   background-color: var(--bg-dark-surface);
   border-left: 1px solid var(--border-dark);
   z-index: 2000;
-  padding: 1.5rem;
+  padding: 1.5rem 1.25rem;
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 1.5rem));
   display: flex;
   flex-direction: column;
-  transition: right 0.3s ease;
+  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mobile-drawer.open {
@@ -4086,3 +4095,229 @@ ul {
     filter: blur(0px);
   }
 }
+
+/* ==========================================================================
+   MOBILE VIEW PERFECTION SUITE (PHONE & TOUCH ERGONOMICS)
+   ========================================================================== */
+
+/* 1. Global Viewport & Prevention of Horizontal Wobble */
+html, body {
+  max-width: 100vw;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 2. Prevent iOS Safari Automatic Zoom-In on Input Focus (Requires >= 16px) */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea,
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .modal-form input,
+  .modal-form select,
+  .modal-form textarea {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+/* 3. Responsive Section Spacing & Editorial Heading Hierarchy */
+@media (max-width: 768px) {
+  .section {
+    padding: 3.75rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 2.25rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.65rem, 6.2vw, 2.05rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .section-description {
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+
+  /* 4. Hero Section Mobile Optimization */
+  .hero-section {
+    padding-top: 105px;
+    padding-bottom: 55px;
+    min-height: auto;
+  }
+
+  .hero-headline {
+    font-size: clamp(1.95rem, 8vw, 2.35rem);
+    line-height: 1.2;
+    margin-bottom: 0.95rem;
+  }
+
+  .hero-subline {
+    font-size: 0.94rem;
+    line-height: 1.55;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .hero-cta-group .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.82rem 1.25rem;
+  }
+
+  .hero-metrics {
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 1.15rem;
+  }
+
+  .metric-value {
+    font-size: 1.15rem;
+  }
+
+  .metric-label {
+    font-size: 0.7rem;
+  }
+
+  .metric-divider {
+    display: none;
+  }
+
+  /* 5. Portfolio Flagship Mobile Actions */
+  .mockup-domain {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .single-flagship-grid .project-bottom {
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .single-flagship-grid .project-bottom .project-cta-btn.secondary,
+  .single-flagship-grid .project-bottom .btn-visit-live {
+    width: 100%;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    font-size: 0.84rem;
+    min-height: 44px;
+  }
+
+  .single-flagship-grid .project-content {
+    padding: 1.15rem 1rem 1rem;
+  }
+
+  /* 6. Contact Form & Quick Cards */
+  .contact-form-wrapper {
+    padding: 1.6rem 1.15rem;
+    border-radius: 18px;
+  }
+
+  .form-title {
+    font-size: 1.28rem;
+  }
+
+  .submit-btn {
+    padding: 0.85rem;
+    min-height: 48px;
+  }
+
+  /* 7. Footer Mobile Cleanliness */
+  .footer-top {
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .footer-bottom {
+    text-align: center;
+  }
+
+  .footer-legal {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    gap: 0.45rem;
+  }
+
+  /* 8. Floating WhatsApp Safe Area */
+  .floating-whatsapp {
+    bottom: max(18px, env(safe-area-inset-bottom, 18px));
+    right: max(18px, env(safe-area-inset-right, 18px));
+  }
+
+  /* 9. Modal Dialogs on Phone */
+  .modal-backdrop {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .modal-dialog {
+    max-height: 92dvh;
+    border-radius: 18px;
+  }
+
+  .modal-content-wrap {
+    padding: 1.25rem 1.15rem 1.5rem;
+  }
+
+  .modal-actions-group {
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .modal-actions-group .btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* 10. Works Page Mobile Tuning */
+  .works-page-headline {
+    font-size: clamp(1.8rem, 6.5vw, 2.15rem);
+  }
+
+  .works-benchmarks-strip {
+    gap: 0.5rem;
+  }
+
+  .benchmark-pill {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.76rem;
+  }
+
+  .works-bottom-cta {
+    padding: 3.75rem 0;
+  }
+
+  .works-cta-card {
+    padding: 1.85rem 1.25rem;
+  }
+
+  .works-cta-title {
+    font-size: 1.5rem;
+  }
+}
+
