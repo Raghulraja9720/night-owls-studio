@@ -1107,6 +1107,7 @@ ul {
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
   cursor: grab;
+  user-select: none;
 }
 
 .services-marquee-wrapper:active {
@@ -1123,6 +1124,7 @@ ul {
   gap: 1.5rem;
   overflow: visible;
   padding: 0 0.5rem;
+  will-change: transform;
 }
 
 .marquee-card {
@@ -1133,20 +1135,18 @@ ul {
   min-height: 460px;
   opacity: 1 !important;
   transform: translateY(0) !important;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.3s ease,
-              border-color 0.3s ease,
-              opacity 0.3s ease !important;
+  transition: box-shadow 0.25s ease,
+              border-color 0.25s ease !important;
 }
 
 .marquee-card:hover {
-  transform: translateY(-6px) !important;
+  transform: translateY(-4px) !important;
   box-shadow: 0 20px 35px -8px rgba(15, 23, 42, 0.09), 0 0 0 1px rgba(245, 158, 11, 0.25) !important;
   border-color: rgba(245, 158, 11, 0.35) !important;
 }
 
 .marquee-card.card-active {
-  border-color: rgba(245, 158, 11, 0.45) !important;
+  border-color: rgba(245, 158, 11, 0.5) !important;
   box-shadow: 0 16px 36px -8px rgba(245, 158, 11, 0.14), 0 4px 16px rgba(15, 23, 42, 0.06) !important;
 }
 
@@ -1167,59 +1167,47 @@ ul {
 
 @media (max-width: 768px) {
   .services-marquee-wrapper {
-    padding: 1rem 0 1.85rem;
-    mask-image: none;
-    -webkit-mask-image: none;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1rem 1.5rem 1.85rem;
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
   }
 
   .services-marquee-track {
-    gap: 1rem;
-    padding: 0 calc((100vw - min(84vw, 340px)) / 2);
+    gap: 1.15rem;
+    padding: 0 0.5rem;
   }
 
   .marquee-card {
-    width: min(84vw, 340px);
-    min-width: min(84vw, 340px);
-    max-width: min(84vw, 340px);
-    padding: 1.5rem 1.3rem 1.3rem;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+    padding: 1.45rem 1.25rem 1.25rem;
     min-height: 440px;
-    scroll-snap-align: center;
-    scroll-snap-stop: normal;
-    opacity: 0.82 !important;
-    transform: scale(0.97) !important;
+    transform: none !important;
+    opacity: 1 !important;
   }
 
-  .marquee-card.card-active {
-    opacity: 1 !important;
-    transform: scale(1) !important;
-    border-color: rgba(245, 158, 11, 0.45) !important;
-    box-shadow: 0 16px 36px -8px rgba(245, 158, 11, 0.16), 0 4px 16px rgba(15, 23, 42, 0.08) !important;
+  .marquee-card:hover {
+    transform: none !important;
   }
 }
 
 @media (max-width: 380px) {
   .services-marquee-track {
-    gap: 0.75rem;
-    padding: 0 calc((100vw - 280px) / 2);
+    gap: 0.85rem;
+    padding: 0 0.25rem;
   }
 
   .marquee-card {
-    width: 280px;
-    min-width: 280px;
-    max-width: 280px;
-    padding: 1.3rem 1.1rem 1.15rem;
-    min-height: 420px;
-  }
-}
-
-@media (hover: none) {
-  .marquee-card:not(.card-active):hover {
-    transform: scale(0.97) !important;
-    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04) !important;
-    border-color: rgba(226, 232, 240, 0.85) !important;
+    width: 275px;
+    min-width: 275px;
+    max-width: 275px;
+    padding: 1.25rem 1.05rem 1.15rem;
+    min-height: 425px;
   }
 }
 

@@ -196,22 +196,25 @@ function ServiceCard({ svc, isActive, onCardClick, onSelect }) {
 
 export default function Services({ onSelectService }) {
   const [isVisible, setIsVisible] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(servicesData.length); // Start at Set 2, item 0
+  const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef(null);
   const trackWrapperRef = useRef(null);
   const isPausedRef = useRef(false);
   const pauseTimerRef = useRef(null);
   const animFrameRef = useRef(null);
+  const touchStartXRef = useRef(0);
+  const touchStartYRef = useRef(0);
+  const hasDraggedRef = useRef(false);
 
-  const pauseAutoScrollTemporarily = () => {
+  const pauseAutoScroll = (resumeDelay = 3000) => {
     isPausedRef.current = true;
     if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
     pauseTimerRef.current = setTimeout(() => {
       isPausedRef.current = false;
-    }, 6000);
+    }, resumeDelay);
   };
 
-  const smoothScrollTo = (targetX, duration = 500) => {
+  const smoothScrollTo = (targetX, duration = 400) => {
     const container = trackWrapperRef.current;
     if (!container) return;
 
@@ -223,12 +226,12 @@ export default function Services({ onSelectService }) {
     const startX = container.scrollLeft;
     const distance = targetX - startX;
     const startTime = performance.now();
-    const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
     const step = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      container.scrollLeft = startX + distance * easeOutQuart(progress);
+      container.scrollLeft = startX + distance * easeOutCubic(progress);
 
       if (progress < 1) {
         animFrameRef.current = requestAnimationFrame(step);
@@ -241,118 +244,95 @@ export default function Services({ onSelectService }) {
     animFrameRef.current = requestAnimationFrame(step);
   };
 
-  const centerCard = (cardIdx, smooth = true) => {
-    const container = trackWrapperRef.current;
-    if (!container) return;
-    const cards = container.querySelectorAll('.marquee-card');
-    if (cardIdx >= 0 && cardIdx < cards.length) {
-      const card = cards[cardIdx];
-      const targetLeft = Math.round(card.offsetLeft - (container.clientWidth - card.offsetWidth) / 2);
-
-      if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-        if (smooth) {
-          container.scrollTo({
-            left: targetLeft,
-            behavior: 'smooth'
-          });
-        } else {
-          container.scrollLeft = targetLeft;
-        }
-      } else {
-        if (smooth) {
-          smoothScrollTo(targetLeft, 520);
-        } else {
-          container.scrollLeft = targetLeft;
-        }
-      }
-    }
-  };
-
-  const handleCardClick = (idx, serviceTitle) => {
-    if (activeIndex !== idx) {
-      pauseAutoScrollTemporarily();
-      setActiveIndex(idx);
-      centerCard(idx, true);
-    } else {
-      handleServiceClick(serviceTitle);
-    }
-  };
-
   const handleNext = () => {
-    pauseAutoScrollTemporarily();
+    pauseAutoScroll(3500);
     const container = trackWrapperRef.current;
     if (!container) return;
     const cards = container.querySelectorAll('.marquee-card');
-    let nextIdx = activeIndex + 1;
-    if (nextIdx >= cards.length - 2) {
-      const loopedIdx = (nextIdx % servicesData.length) + servicesData.length;
-      centerCard(loopedIdx, false);
-      nextIdx = loopedIdx + 1;
-    }
-    setActiveIndex(nextIdx);
-    centerCard(nextIdx, true);
+    if (!cards.length) return;
+
+    const cardStep = cards[1] ? (cards[1].offsetLeft - cards[0].offsetLeft) : 320;
+    smoothScrollTo(container.scrollLeft + cardStep, 450);
   };
 
   const handlePrev = () => {
-    pauseAutoScrollTemporarily();
+    pauseAutoScroll(3500);
     const container = trackWrapperRef.current;
     if (!container) return;
-    let prevIdx = activeIndex - 1;
-    if (prevIdx < 2) {
-      const loopedIdx = (prevIdx % servicesData.length) + servicesData.length;
-      centerCard(loopedIdx, false);
-      prevIdx = loopedIdx - 1;
-    }
-    setActiveIndex(prevIdx);
-    centerCard(prevIdx, true);
+    const cards = container.querySelectorAll('.marquee-card');
+    if (!cards.length) return;
+
+    const cardStep = cards[1] ? (cards[1].offsetLeft - cards[0].offsetLeft) : 320;
+    smoothScrollTo(container.scrollLeft - cardStep, 450);
   };
 
-  const handleTouchStart = () => {
+  const handleTouchStart = (e) => {
     isPausedRef.current = true;
+    hasDraggedRef.current = false;
+    if (e.touches && e.touches[0]) {
+      touchStartXRef.current = e.touches[0].clientX;
+      touchStartYRef.current = e.touches[0].clientY;
+    }
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = null;
     }
   };
 
+  const handleTouchMove = (e) => {
+    isPausedRef.current = true;
+    if (e.touches && e.touches[0]) {
+      const diffX = Math.abs(e.touches[0].clientX - touchStartXRef.current);
+      const diffY = Math.abs(e.touches[0].clientY - touchStartYRef.current);
+      if (diffX > 8 || diffY > 8) {
+        hasDraggedRef.current = true;
+      }
+    }
+  };
+
   const handleTouchEnd = () => {
-    pauseAutoScrollTemporarily();
-    setTimeout(() => {
-      const container = trackWrapperRef.current;
-      if (!container) return;
-      const setLen = servicesData.length;
-      setActiveIndex((curr) => {
-        if (curr < setLen || curr >= setLen * 2) {
-          const normalized = (curr % setLen) + setLen;
-          centerCard(normalized, false);
-          return normalized;
-        }
-        return curr;
-      });
-    }, 400);
+    pauseAutoScroll(2500);
+  };
+
+  const handleCardClick = (serviceTitle) => {
+    if (hasDraggedRef.current) return;
+    handleServiceClick(serviceTitle);
   };
 
   const handleScroll = () => {
     const container = trackWrapperRef.current;
     if (!container) return;
 
-    if (animFrameRef.current === null) {
-      const containerCenter = container.scrollLeft + container.clientWidth / 2;
-      const cards = container.querySelectorAll('.marquee-card');
-      let closestIdx = activeIndex;
-      let minDistance = Infinity;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    const cards = container.querySelectorAll('.marquee-card');
+    if (!cards.length) return;
 
-      cards.forEach((card, idx) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-        const dist = Math.abs(containerCenter - cardCenter);
-        if (dist < minDistance) {
-          minDistance = dist;
-          closestIdx = idx;
+    let closestIdx = 0;
+    let minDistance = Infinity;
+
+    cards.forEach((card, idx) => {
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const dist = Math.abs(containerCenter - cardCenter);
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestIdx = idx;
+      }
+    });
+
+    const activeModulo = closestIdx % servicesData.length;
+    if (activeModulo !== activeIndex) {
+      setActiveIndex(activeModulo);
+    }
+
+    // Seamless infinite wrap normalization during touch scroll
+    if (cards.length >= servicesData.length * 2) {
+      const singleSetWidth = cards[servicesData.length].offsetLeft - cards[0].offsetLeft;
+      if (singleSetWidth > 0) {
+        if (container.scrollLeft >= singleSetWidth * 2) {
+          container.scrollLeft -= singleSetWidth;
+        } else if (container.scrollLeft < singleSetWidth * 0.4) {
+          container.scrollLeft += singleSetWidth;
         }
-      });
-
-      if (closestIdx !== activeIndex && minDistance < 160) {
-        setActiveIndex(closestIdx);
       }
     }
   };
@@ -376,33 +356,32 @@ export default function Services({ onSelectService }) {
     return () => observer.disconnect();
   }, []);
 
-  // Initial centering on mount
-  useEffect(() => {
-    const initialIndex = servicesData.length;
-    setActiveIndex(initialIndex);
-    const timer = setTimeout(() => {
-      centerCard(initialIndex, false);
-    }, 60);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Window resize re-centering
-  useEffect(() => {
-    const handleResize = () => {
-      centerCard(activeIndex, false);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [activeIndex]);
-
-  // Desktop gentle auto-drift (disabled on touch/mobile devices)
+  // Initial positioning on mount at Set 2
   useEffect(() => {
     const container = trackWrapperRef.current;
     if (!container) return;
 
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      return;
-    }
+    const setInitialPos = () => {
+      const cards = container.querySelectorAll('.marquee-card');
+      if (cards.length >= servicesData.length * 2) {
+        const singleSetWidth = cards[servicesData.length].offsetLeft - cards[0].offsetLeft;
+        if (singleSetWidth > 0) {
+          // Center the first card of Set 2
+          const targetCard = cards[servicesData.length];
+          const initialCenter = targetCard.offsetLeft - (container.clientWidth - targetCard.offsetWidth) / 2;
+          container.scrollLeft = initialCenter > 0 ? initialCenter : singleSetWidth;
+        }
+      }
+    };
+
+    const timer = setTimeout(setInitialPos, 60);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Continuous auto-drift on BOTH mobile and desktop
+  useEffect(() => {
+    const container = trackWrapperRef.current;
+    if (!container) return;
 
     let animId;
     let lastTime = performance.now();
@@ -412,12 +391,20 @@ export default function Services({ onSelectService }) {
       lastTime = time;
 
       if (!isPausedRef.current && animFrameRef.current === null && container) {
-        container.scrollLeft += (22 * delta) / 1000;
-        const totalCards = container.querySelectorAll('.marquee-card');
-        if (totalCards.length > 0) {
-          const singleSetWidth = servicesData.length * (totalCards[0].offsetWidth + 24);
-          if (container.scrollLeft >= singleSetWidth * 2) {
-            container.scrollLeft -= singleSetWidth;
+        // Continuous reading speed: 18px/sec on mobile, 22px/sec on desktop
+        const isMobile = window.innerWidth <= 768;
+        const speed = isMobile ? 18 : 22;
+        container.scrollLeft += (speed * delta) / 1000;
+
+        const cards = container.querySelectorAll('.marquee-card');
+        if (cards.length >= servicesData.length * 2) {
+          const singleSetWidth = cards[servicesData.length].offsetLeft - cards[0].offsetLeft;
+          if (singleSetWidth > 0) {
+            if (container.scrollLeft >= singleSetWidth * 2) {
+              container.scrollLeft -= singleSetWidth;
+            } else if (container.scrollLeft < singleSetWidth * 0.4) {
+              container.scrollLeft += singleSetWidth;
+            }
           }
         }
       }
@@ -437,7 +424,7 @@ export default function Services({ onSelectService }) {
     }
   };
 
-  const currentDisplayNum = String((activeIndex % servicesData.length) + 1).padStart(2, '0');
+  const currentDisplayNum = String(activeIndex + 1).padStart(2, '0');
   const totalDisplayNum = String(servicesData.length).padStart(2, '0');
 
   return (
@@ -491,6 +478,7 @@ export default function Services({ onSelectService }) {
           onMouseEnter={() => { isPausedRef.current = true; }}
           onMouseLeave={() => { isPausedRef.current = false; }}
           onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onScroll={handleScroll}
         >
@@ -501,7 +489,7 @@ export default function Services({ onSelectService }) {
                 key={`s1-${svc.id}`}
                 svc={svc}
                 isActive={activeIndex === i}
-                onCardClick={() => handleCardClick(i, svc.title)}
+                onCardClick={() => handleCardClick(svc.title)}
                 onSelect={() => handleServiceClick(svc.title)}
               />
             ))}
@@ -510,8 +498,8 @@ export default function Services({ onSelectService }) {
               <ServiceCard
                 key={`s2-${svc.id}`}
                 svc={svc}
-                isActive={activeIndex === (servicesData.length + i)}
-                onCardClick={() => handleCardClick(servicesData.length + i, svc.title)}
+                isActive={activeIndex === i}
+                onCardClick={() => handleCardClick(svc.title)}
                 onSelect={() => handleServiceClick(svc.title)}
               />
             ))}
@@ -520,8 +508,8 @@ export default function Services({ onSelectService }) {
               <ServiceCard
                 key={`s3-${svc.id}`}
                 svc={svc}
-                isActive={activeIndex === (servicesData.length * 2 + i)}
-                onCardClick={() => handleCardClick(servicesData.length * 2 + i, svc.title)}
+                isActive={activeIndex === i}
+                onCardClick={() => handleCardClick(svc.title)}
                 onSelect={() => handleServiceClick(svc.title)}
               />
             ))}
