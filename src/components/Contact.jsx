@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Phone, Mail, Send, CheckCircle2 } from 'lucide-react';
+import { MessageCircle, Phone, Mail, Send, CheckCircle2, Instagram } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
 const OWNER_WHATSAPP_NUMBER = '918531807705';
@@ -210,6 +210,23 @@ export default function Contact({ preselectedService }) {
                   <span className="quick-label">Email Us</span>
                   <span className="quick-value">contact.nightowls.team@gmail.com</span>
                   <span className="quick-sub">Direct response within 24 hours</span>
+                </div>
+              </a>
+
+              {/* Instagram Card */}
+              <a
+                href="https://www.instagram.com/night_owls_studios/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="quick-contact-card instagram-card"
+              >
+                <div className="quick-icon-box instagram-icon">
+                  <Instagram size={22} />
+                </div>
+                <div className="quick-details">
+                  <span className="quick-label">Instagram</span>
+                  <span className="quick-value">@night_owls_studios</span>
+                  <span className="quick-sub">Follow &amp; DM us on Instagram &rarr;</span>
                 </div>
               </a>
             </div>

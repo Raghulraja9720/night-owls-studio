@@ -2977,6 +2977,16 @@ ul {
   border-color: rgba(37, 211, 102, 0.3);
 }
 
+.quick-contact-card.instagram-card {
+  background: linear-gradient(135deg, rgba(225, 48, 108, 0.08) 0%, rgba(245, 96, 64, 0.02) 100%);
+  border-color: rgba(225, 48, 108, 0.25);
+}
+
+.quick-contact-card.instagram-card:hover {
+  border-color: rgba(225, 48, 108, 0.6);
+  box-shadow: 0 4px 14px rgba(225, 48, 108, 0.12);
+}
+
 .quick-icon-box {
   width: 40px;
   height: 40px;
@@ -2994,6 +3004,12 @@ ul {
 
 .quick-icon-box.whatsapp-icon {
   background-color: var(--whatsapp-green);
+  color: #ffffff;
+  border: none;
+}
+
+.quick-icon-box.instagram-icon {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
   color: #ffffff;
   border: none;
 }
@@ -3257,6 +3273,7 @@ ul {
   color: var(--text-light-secondary);
 }
 
+.footer-contact-list li svg,
 .footer-contact-list li i {
   color: var(--primary-gold);
   width: 15px;

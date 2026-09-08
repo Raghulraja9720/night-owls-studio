@@ -42,6 +42,15 @@ export default function Footer({ onOpenPolicy, onSelectService, onNavigate }) {
               >
                 <MessageCircle size={18} />
               </a>
+              <a
+                href="https://www.instagram.com/night_owls_studios/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
+                aria-label="Instagram"
+              >
+                <Instagram size={18} />
+              </a>
               <a href="mailto:contact.nightowls.team@gmail.com" className="social-icon" aria-label="Email">
                 <Mail size={18} />
               </a>
@@ -83,6 +92,7 @@ export default function Footer({ onOpenPolicy, onSelectService, onNavigate }) {
             <ul className="footer-contact-list">
               <li><Phone size={16} /> <a href="tel:8531807705" style={{ color: 'inherit' }}>+91 85318 07705</a></li>
               <li><MessageCircle size={16} /> <a href="https://wa.me/918531807705" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>WhatsApp Support</a></li>
+              <li><Instagram size={16} /> <a href="https://www.instagram.com/night_owls_studios/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>@night_owls_studios</a></li>
               <li><Mail size={16} /> <a href="mailto:contact.nightowls.team@gmail.com" style={{ color: 'inherit' }}>contact.nightowls.team@gmail.com</a></li>
             </ul>
           </div>
