@@ -50,7 +50,7 @@ const members = [
     image: '/assets/images/sarathy.jpg',
     skills: ['Video Editing', 'Motion Graphics', 'Reels', 'Promotional Content'],
     icon: Film,
-    objectPosition: 'center 15%'
+    objectPosition: 'center 12%'
   }
 ];
 
