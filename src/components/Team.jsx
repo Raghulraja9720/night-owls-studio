@@ -47,7 +47,7 @@ const members = [
     role: 'Video Editor & Motion Designer',
     dept: 'Video & Motion Design',
     bio: 'Creates engaging videos, reels, and promotional content that help brands attract attention and communicate their message effectively.',
-    image: '/assets/images/sarathy.jpg',
+    image: '/assets/images/sarathy-v2.jpg',
     skills: ['Video Editing', 'Motion Graphics', 'Reels', 'Promotional Content'],
     icon: Film,
     objectPosition: 'center 12%'
