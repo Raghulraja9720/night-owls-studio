@@ -159,15 +159,22 @@ export default function Portfolio({ onSelectProject, onRequestProject, isStandal
 
               {/* Visual Showcase Box */}
               <div className="project-image-box">
-                <img
-                  src={project.image}
-                  alt={project.name}
-                  className="project-img flagship-img"
-                  loading="lazy"
-                  decoding="async"
-                  width="1024"
-                  height="521"
-                />
+                <picture style={{ display: 'contents' }}>
+                  <source
+                    type="image/webp"
+                    srcSet="/assets/images/sai-indirabala-480.webp 480w, /assets/images/sai-indirabala-768.webp 768w, /assets/images/sai-indirabala-1024.webp 1024w, /assets/images/sai-indirabala-1536.webp 1536w"
+                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 720px, 1024px"
+                  />
+                  <img
+                    src={project.image}
+                    alt={project.name}
+                    className="project-img flagship-img"
+                    loading="lazy"
+                    decoding="async"
+                    width="1024"
+                    height="521"
+                  />
+                </picture>
 
                 {/* Interactive Glassmorphic Hover Overlay */}
                 <div className="project-hover-overlay">

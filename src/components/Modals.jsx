@@ -81,7 +81,14 @@ export function ProjectModal({ projectId, onClose, onRequestProject }) {
                 <span className="mockup-status-label">Live Site ↗</span>
               </a>
             </div>
-            <img src={data.image} alt={data.title} className="modal-project-img" loading="lazy" decoding="async" />
+            <picture style={{ display: 'contents' }}>
+              <source
+                type="image/webp"
+                srcSet="/assets/images/sai-indirabala-480.webp 480w, /assets/images/sai-indirabala-768.webp 768w, /assets/images/sai-indirabala-1024.webp 1024w, /assets/images/sai-indirabala-1536.webp 1536w"
+                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 720px, 960px"
+              />
+              <img src={data.image} alt={data.title} className="modal-project-img" width="1024" height="521" loading="lazy" decoding="async" />
+            </picture>
           </div>
 
           <div className="modal-content-wrap">

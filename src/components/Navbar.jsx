@@ -54,7 +54,13 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
             onClick={(e) => handleNavClick(e, 'home', 'hero')}
           >
             <div className="logo-image-wrap">
-              <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" decoding="async" />
+              <picture style={{ display: 'contents' }}>
+                <source
+                  type="image/webp"
+                  srcSet="/assets/logo/night-owls-logo-40.webp 1x, /assets/logo/night-owls-logo-80.webp 2x"
+                />
+                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" decoding="async" />
+              </picture>
             </div>
             <div className="brand-text">
               <span className="brand-title">Night Owls</span>
@@ -164,7 +170,13 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
             onClick={(e) => handleNavClick(e, 'home', 'hero')}
           >
             <div className="logo-image-wrap">
-              <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" decoding="async" />
+              <picture style={{ display: 'contents' }}>
+                <source
+                  type="image/webp"
+                  srcSet="/assets/logo/night-owls-logo-40.webp 1x, /assets/logo/night-owls-logo-80.webp 2x"
+                />
+                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" decoding="async" />
+              </picture>
             </div>
             <div className="brand-text">
               <span className="brand-title">Night Owls</span>
