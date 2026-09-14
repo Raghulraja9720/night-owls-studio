@@ -16,8 +16,8 @@ const projects = [
   {
     id: 'sai-indirabala',
     category: 'custom-furniture',
-    domain: 'sai-indirabala-furniture.vercel.app',
-    liveUrl: 'https://sai-indirabala-furniture.vercel.app/',
+    domain: 'www.saiindirabala.in',
+    liveUrl: 'https://www.saiindirabala.in/',
     badge: 'CUSTOM FURNITURE • 3D INTERIOR SHOWCASE',
     tags: ['Custom Furniture', '3D Interior Showcase', 'Digital Experience'],
     deliverables: [

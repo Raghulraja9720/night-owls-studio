@@ -5,8 +5,8 @@ const projectsData = {
   'sai-indirabala': {
     title: 'Sai Indirabala Furniture — Digital Experience',
     category: 'CUSTOM FURNITURE • 3D INTERIOR SHOWCASE',
-    domain: 'sai-indirabala-furniture.vercel.app',
-    liveUrl: 'https://sai-indirabala-furniture.vercel.app/',
+    domain: 'www.saiindirabala.in',
+    liveUrl: 'https://www.saiindirabala.in/',
     service: 'Website Development',
     image: '/assets/images/sai-indirabala.png',
     description: 'A premium digital presence created for a Madurai-based furniture and interior business, showcasing custom furniture, 3D visualization, completed projects, and real customer feedback.',
