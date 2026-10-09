@@ -11,128 +11,30 @@ import {
   Wrench,
   ArrowRight,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ShoppingCart,
+  Monitor,
+  Database
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
-const servicesData = [
-  {
-    id: 'web-dev',
-    category: 'development',
-    number: '01',
-    title: 'Website Development',
-    subtitle: 'Modern, Responsive & High-Performance',
-    desc: 'Bespoke digital flagships built with clean React architectures, engineered to load instantly, command authority, and turn visitors into qualified clients.',
-    icon: Globe,
-    colorClass: 'icon-blue',
-    featured: false,
-    ctaText: 'Build Your Website',
-    tags: ['React & Next.js', 'Sub-Second Speed', 'SEO Ready', 'Lead Routing']
-  },
-  {
-    id: 'ui-ux',
-    category: 'design',
-    number: '02',
-    title: 'UI/UX Design',
-    subtitle: 'Clean & Intuitive Interfaces',
-    desc: 'Human-centric Figma prototypes, wireframes, and design systems crafted for effortless usability, brand prestige, and frictionless navigation journeys.',
-    icon: Palette,
-    colorClass: 'icon-cyan',
-    featured: false,
-    ctaText: 'Design Interface',
-    tags: ['Figma Mockups', 'Design Systems', 'User Journeys', 'Prototypes']
-  },
-  {
-    id: 'web-app',
-    category: 'development',
-    number: '03',
-    title: 'Web Application Development',
-    subtitle: 'Custom Business Web Platforms',
-    desc: 'Scalable web applications tailored to your exact operational workflows, featuring client portals, authenticated dashboards, and secure API integrations.',
-    icon: Code2,
-    colorClass: 'icon-indigo',
-    featured: false,
-    ctaText: 'Develop Web App',
-    tags: ['Custom Workflows', 'Client Portals', 'Cloud Databases', 'REST APIs']
-  },
-  {
-    id: 'mobile-dev',
-    category: 'development',
-    number: '04',
-    title: 'Mobile-Friendly Development',
-    subtitle: 'Optimized For Every Screen Size',
-    desc: 'Touch-optimized web experiences engineered for mobile ergonomics, adaptive asset compression, and silky 60fps scrolling across iOS and Android.',
-    icon: Smartphone,
-    colorClass: 'icon-emerald',
-    featured: false,
-    ctaText: 'Optimize Mobile',
-    tags: ['iOS & Android', 'Thumb Ergonomics', 'Adaptive Assets', '60fps Motion']
-  },
-  {
-    id: 'landing-pages',
-    category: 'design',
-    number: '05',
-    title: 'Landing Pages',
-    subtitle: 'High-Impact Conversion Funnels',
-    desc: 'Conversion-focused landing pages engineered for product launches, ad campaigns, and event signups — mathematically structured to maximize ROI.',
-    icon: Rocket,
-    colorClass: 'icon-gold',
-    featured: false,
-    ctaText: 'Launch Landing Page',
-    tags: ['Conversion Story', 'Sub-100ms Load', 'Direct WhatsApp', 'A/B Tested']
-  },
-  {
-    id: 'meta-ads',
-    category: 'marketing',
-    number: '06',
-    title: 'Meta Ads Management',
-    subtitle: 'Facebook & Instagram Campaigns',
-    desc: 'Data-driven paid advertising campaigns crafted to scale audience reach, capture high-intent inbound leads, and continuously optimize ROAS.',
-    icon: TrendingUp,
-    colorClass: 'icon-amber',
-    featured: false,
-    ctaText: 'Launch Ad Campaign',
-    tags: ['Laser Targeting', 'Ad Creatives', 'Meta Pixel / CAPI', 'ROAS Scaling']
-  },
-  {
-    id: 'seo-opt',
-    category: 'marketing',
-    number: '07',
-    title: 'SEO Optimization',
-    subtitle: 'Technical & On-Page Search Visibility',
-    desc: 'Comprehensive search optimization ensuring your digital presence ranks prominently on Google search for high-value organic client inquiries.',
-    icon: Search,
-    colorClass: 'icon-purple',
-    featured: false,
-    ctaText: 'Improve Rankings',
-    tags: ['Schema Markup', 'On-Page SEO', 'Keyword Research', 'Google Console']
-  },
-  {
-    id: 'site-opt',
-    category: 'support',
-    number: '08',
-    title: 'Website Optimization',
-    subtitle: 'Speed, Accessibility & UX Polish',
-    desc: 'Deep performance tuning to slash bounce rates, compress media, achieve 90+ Google Lighthouse scores, and ensure accessible web compliance.',
-    icon: Zap,
-    colorClass: 'icon-rose',
-    featured: false,
-    ctaText: 'Speed Up Website',
-    tags: ['90+ Lighthouse', 'Asset Minification', 'WCAG AA Access', 'Core Web Vitals']
-  },
-  {
-    id: 'site-maint',
-    category: 'support',
-    number: '09',
-    title: 'Website Maintenance',
-    subtitle: '24/7 Updates, Fixes & Tech Support',
-    desc: 'Proactive updates, security patches, regular backups, and rapid troubleshooting so your website remains 100% operational and protected around the clock.',
-    icon: Wrench,
-    colorClass: 'icon-teal',
-    featured: false,
-    ctaText: 'Get Ongoing Support',
-    tags: ['Uptime Monitoring', 'Security Patches', 'Cloud Backups', 'Quick Fixes']
+const getIcon = (iconName) => {
+  switch (iconName) {
+    case 'Globe': return Globe;
+    case 'Palette': return Palette;
+    case 'Code2': return Code2;
+    case 'Smartphone': return Smartphone;
+    case 'Rocket': return Rocket;
+    case 'TrendingUp': return TrendingUp;
+    case 'Search': return Search;
+    case 'Zap': return Zap;
+    case 'Wrench': return Wrench;
+    case 'ShoppingCart': return ShoppingCart;
+    case 'Monitor': return Monitor;
+    case 'Database': return Database;
+    default: return Globe;
   }
-];
+};
 
 function ServiceCard({ svc, isActive, onCardClick, onSelect }) {
   const IconComponent = svc.icon;
@@ -196,6 +98,8 @@ function ServiceCard({ svc, isActive, onCardClick, onSelect }) {
 
 export default function Services({ onSelectService }) {
   const [isVisible, setIsVisible] = useState(false);
+  const [servicesData, setServicesData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef(null);
   const trackWrapperRef = useRef(null);
@@ -205,6 +109,50 @@ export default function Services({ onSelectService }) {
   const touchStartXRef = useRef(0);
   const touchStartYRef = useRef(0);
   const hasDraggedRef = useRef(false);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('services')
+          .select('*')
+          .eq('status', 'PUBLISHED')
+          .order('display_order', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching services from Supabase:', error);
+          return;
+        }
+
+        if (data) {
+          const colors = [
+            'icon-blue', 'icon-cyan', 'icon-indigo', 'icon-emerald', 'icon-gold',
+            'icon-amber', 'icon-purple', 'icon-rose', 'icon-teal'
+          ];
+          
+          const mappedData = data.map((dbSvc, i) => ({
+            id: dbSvc.id,
+            category: 'support', // Fallback
+            number: String(i + 1).padStart(2, '0'),
+            title: dbSvc.title,
+            subtitle: dbSvc.short_description || '',
+            desc: dbSvc.full_description || '',
+            icon: getIcon(dbSvc.icon),
+            colorClass: colors[i % colors.length],
+            featured: false,
+            ctaText: dbSvc.cta_text || 'Learn More',
+            tags: dbSvc.features || []
+          }));
+          setServicesData(mappedData);
+        }
+      } catch (err) {
+        console.error('Exception fetching services:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
 
   const pauseAutoScroll = (resumeDelay = 3000) => {
     isPausedRef.current = true;

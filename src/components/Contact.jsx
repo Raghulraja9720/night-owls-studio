@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Phone, Mail, Send, CheckCircle2, Instagram } from 'lucide-react';
-import emailjs from '@emailjs/browser';
+import { supabase } from '../lib/supabase';
 
-const OWNER_WHATSAPP_NUMBER = '918531807705';
-
-// EmailJS Credentials provided by client
-const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_e755x5e';
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_51kt0qj';
-const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '5kKs6kpDnLkYyTtX7';
-
-// Initialize EmailJS with public key
-try {
-  if (EMAILJS_PUBLIC_KEY) {
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-  }
-} catch (e) {
-  console.warn('EmailJS init note:', e);
-}
+// Fallback values in case DB fetch fails or is not set up
+const FALLBACK_WHATSAPP = '918531807705';
+const FALLBACK_PHONE = '+91 85318 07705';
+const FALLBACK_EMAIL = 'contact.nightowls.team@gmail.com';
+const FALLBACK_INSTA = 'https://www.instagram.com/night_owls_studios/';
 
 export default function Contact({ preselectedService }) {
   const [formData, setFormData] = useState({
@@ -29,8 +19,20 @@ export default function Contact({ preselectedService }) {
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [siteSettings, setSiteSettings] = useState(null);
 
   useEffect(() => {
+    // Fetch global site settings
+    const fetchSettings = async () => {
+      try {
+        const { data } = await supabase.from('site_settings').select('*').eq('id', 1).single();
+        if (data) setSiteSettings(data);
+      } catch (err) {
+        console.warn('Error fetching site settings:', err);
+      }
+    };
+    fetchSettings();
+    
     if (preselectedService) {
       setFormData((prev) => ({ ...prev, serviceRequired: preselectedService }));
       setTimeout(() => {
@@ -69,75 +71,29 @@ export default function Contact({ preselectedService }) {
     });
     localStorage.setItem('nightowls_enquiries', JSON.stringify(stored));
 
-    // 2. Direct Email Dispatch via EmailJS (service_e755x5e / template_51kt0qj)
+    // 2. Save directly to Supabase CMS
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
+      await supabase.from('inquiries').insert([
         {
           name: formData.fullName,
-          fullName: formData.fullName,
-          from_name: formData.fullName,
-          client_name: formData.fullName,
           email: formData.email,
-          from_email: formData.email,
-          reply_to: formData.email,
-          client_email: formData.email,
           phone: formData.phone,
-          client_phone: formData.phone,
-          businessName: formData.businessName || 'N/A',
-          business_name: formData.businessName || 'N/A',
-          serviceRequired: formData.serviceRequired || 'General Inquiry',
+          company: formData.businessName || '',
           service: formData.serviceRequired || 'General Inquiry',
-          message: formData.message || 'None',
-          project_overview: formData.message || 'None',
-          to_email: 'contact.nightowls.team@gmail.com'
-        },
-        EMAILJS_PUBLIC_KEY
-      );
-      console.log('Query delivered to inbox via EmailJS');
-    } catch (emailErr) {
-      console.warn('EmailJS delivery error:', emailErr);
-    }
-
-    // 3. Fallback direct dispatch via FormSubmit (guarantees delivery if EmailJS quota reached)
-    try {
-      await fetch('https://formsubmit.co/ajax/contact.nightowls.team@gmail.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          _subject: `New Client Query from ${formData.fullName} - Night Owls Studio`,
-          'Client Name': formData.fullName,
-          'Email Address': formData.email,
-          'Phone / WhatsApp': formData.phone,
-          'Business / Website': formData.businessName || 'N/A',
-          'Service Required': formData.serviceRequired || 'General Inquiry',
-          'Project Overview': formData.message || 'None',
-          _captcha: 'false',
-          _template: 'table'
-        })
-      });
+          message: formData.message || '',
+          status: 'NEW'
+        }
+      ]);
     } catch (err) {
-      console.warn('FormSubmit backup dispatch note:', err);
+      console.warn('Supabase save error:', err);
     }
 
-    // 4. Dispatch automatically in the background to WhatsApp without redirecting
-    try {
-      const apiKey = localStorage.getItem('callmebot_api_key') || 'default';
-      const gatewayUrl = `https://api.callmebot.com/whatsapp.php?phone=${OWNER_WHATSAPP_NUMBER}&text=${encodeURIComponent(waText)}&apikey=${apiKey}`;
-      
-      fetch(gatewayUrl, {
-        method: 'GET',
-        mode: 'no-cors'
-      }).catch((err) => console.warn('Background WhatsApp dispatch logged:', err));
-    } catch (err) {
-      console.warn('Background dispatch error:', err);
-    }
+    // 3. Open WhatsApp with pre-filled message
+    const whatsappNum = siteSettings?.whatsapp || FALLBACK_WHATSAPP;
+    const whatsappUrl = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(waText)}`;
+    window.open(whatsappUrl, '_blank');
 
-    // 3. Reset form and display success without redirect
+    // 6. Reset form and display success without redirect
     setTimeout(() => {
       setFormData({
         fullName: '',
@@ -174,7 +130,7 @@ export default function Contact({ preselectedService }) {
             <div className="contact-quick-cards">
               {/* WhatsApp Card */}
               <a
-                href={`https://wa.me/${OWNER_WHATSAPP_NUMBER}?text=Hi%20Night%20Owls%20Studio%20Team!%20I'm%20interested%20in%20engineering%20my%20digital%20presence%20with%20your%20services.`}
+                href={`https://wa.me/${siteSettings?.whatsapp || FALLBACK_WHATSAPP}?text=Hi%20Night%20Owls%20Studio%20Team!%20I'm%20interested%20in%20engineering%20my%20digital%20presence%20with%20your%20services.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="quick-contact-card whatsapp-card"
@@ -190,32 +146,32 @@ export default function Contact({ preselectedService }) {
               </a>
 
               {/* Direct Phone Card */}
-              <a href="tel:8531807705" className="quick-contact-card">
+              <a href={`tel:${siteSettings?.whatsapp || FALLBACK_WHATSAPP}`} className="quick-contact-card">
                 <div className="quick-icon-box">
                   <Phone size={22} />
                 </div>
                 <div className="quick-details">
                   <span className="quick-label">Direct Phone Line</span>
-                  <span className="quick-value">+91 85318 07705</span>
+                  <span className="quick-value">{siteSettings?.phone || FALLBACK_PHONE}</span>
                   <span className="quick-sub">Click to call immediately &rarr;</span>
                 </div>
               </a>
 
               {/* Email Card */}
-              <a href="mailto:contact.nightowls.team@gmail.com" className="quick-contact-card">
+              <a href={`mailto:${siteSettings?.contact_email || FALLBACK_EMAIL}`} className="quick-contact-card">
                 <div className="quick-icon-box">
                   <Mail size={22} />
                 </div>
                 <div className="quick-details">
                   <span className="quick-label">Email Us</span>
-                  <span className="quick-value">contact.nightowls.team@gmail.com</span>
+                  <span className="quick-value">{siteSettings?.contact_email || FALLBACK_EMAIL}</span>
                   <span className="quick-sub">Direct response within 24 hours</span>
                 </div>
               </a>
 
               {/* Instagram Card */}
               <a
-                href="https://www.instagram.com/night_owls_studios/"
+                href={siteSettings?.instagram || FALLBACK_INSTA}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="quick-contact-card instagram-card"
@@ -225,7 +181,7 @@ export default function Contact({ preselectedService }) {
                 </div>
                 <div className="quick-details">
                   <span className="quick-label">Instagram</span>
-                  <span className="quick-value">@night_owls_studios</span>
+                  <span className="quick-value">{siteSettings?.instagram ? '@' + siteSettings.instagram.split('/').filter(Boolean).pop() : '@night_owls_studios'}</span>
                   <span className="quick-sub">Follow &amp; DM us on Instagram &rarr;</span>
                 </div>
               </a>

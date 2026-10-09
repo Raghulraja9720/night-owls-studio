@@ -162,7 +162,7 @@ export default function Hero({ onExploreWorks, onBookConsultation }) {
                     type="image/webp"
                     srcSet="/assets/logo/night-owls-logo-112.webp 1x, /assets/logo/night-owls-logo-224.webp 2x, /assets/logo/night-owls-logo-336.webp 3x"
                   />
-                  <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Emblem" className="hero-owl-image" width="112" height="112" fetchPriority="high" decoding="async" />
+                  <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Emblem" className="hero-owl-image" width="112" height="112" loading="eager" fetchPriority="high" decoding="sync" />
                 </picture>
               </div>
               <div className="live-activity-box">

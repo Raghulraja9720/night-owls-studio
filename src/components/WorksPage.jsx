@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Sparkles, MessageCircle, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import Portfolio from './Portfolio';
 
 export default function WorksPage({ onSelectProject, onRequestProject, onBackHome, onBackToProcess }) {
+  const [activeTab, setActiveTab] = useState(null);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
@@ -12,20 +14,21 @@ export default function WorksPage({ onSelectProject, onRequestProject, onBackHom
   return (
     <div className="works-page">
       {/* Works Page Header */}
+      {activeTab === 'website' && (
       <section className="works-page-hero dark-theme">
         <div className="container">
           <div className="works-breadcrumb">
             <button
               type="button"
               className="breadcrumb-back-btn"
-              onClick={handleBack}
-              aria-label="Back to Process"
+              onClick={() => setActiveTab(null)}
+              aria-label="Back to Work"
             >
               <ArrowLeft size={18} />
-              <span>Back to Process</span>
+              <span>Back to Work</span>
             </button>
             <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Our Works</span>
+            <span className="breadcrumb-current">Website Development</span>
           </div>
 
           <div className="works-hero-content text-center">
@@ -61,12 +64,51 @@ export default function WorksPage({ onSelectProject, onRequestProject, onBackHom
           </div>
         </div>
       </section>
+      )}
+
+      {activeTab === 'metaAds' && (
+      <section className="works-page-hero dark-theme">
+        <div className="container">
+          <div className="works-breadcrumb" style={{ paddingTop: '2rem' }}>
+            <button
+              type="button"
+              className="breadcrumb-back-btn"
+              onClick={() => setActiveTab(null)}
+              aria-label="Back to Work"
+            >
+              <ArrowLeft size={18} />
+              <span>Back to Work</span>
+            </button>
+            <span className="breadcrumb-separator">/</span>
+            <span className="breadcrumb-current">Meta Ads</span>
+          </div>
+
+          <div className="works-hero-content text-center">
+            <div className="section-badge badge-dark">
+              <Sparkles size={13} style={{ marginRight: '6px' }} />
+              <span>Digital Advertising</span>
+            </div>
+
+            <h1 className="works-page-headline">
+              High-Converting <br />
+              <span className="text-gradient-gold">Meta Ads Creatives</span>
+            </h1>
+
+            <p className="hero-subline max-w-2xl mx-auto">
+              Explore our gallery of engaging Facebook and Instagram advertising videos designed to capture attention and drive conversions.
+            </p>
+          </div>
+        </div>
+      </section>
+      )}
 
       {/* Portfolio Showcase Grid & Filter Tabs */}
       <Portfolio
         onSelectProject={onSelectProject}
         onRequestProject={onRequestProject}
         isStandalonePage={true}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
 
       {/* Works Page Bottom CTA */}

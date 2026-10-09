@@ -1,8 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle, Mail, Instagram, Linkedin, Phone, Clock } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+
+// Fallback values in case DB fetch fails or is not set up
+const FALLBACK_WHATSAPP = '918531807705';
+const FALLBACK_PHONE = '+91 85318 07705';
+const FALLBACK_EMAIL = 'contact.nightowls.team@gmail.com';
+const FALLBACK_INSTA = 'https://www.instagram.com/night_owls_studios/';
 
 export default function Footer({ onOpenPolicy, onSelectService, onNavigate }) {
   const currentYear = new Date().getFullYear();
+  const [siteSettings, setSiteSettings] = useState(null);
+
+  useEffect(() => {
+    // Fetch global site settings
+    const fetchSettings = async () => {
+      try {
+        const { data } = await supabase.from('site_settings').select('*').eq('id', 1).single();
+        if (data) setSiteSettings(data);
+      } catch (err) {
+        console.warn('Error fetching site settings for footer:', err);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleFooterNav = (e, page, section = '') => {
     if (onNavigate) {
@@ -40,7 +61,7 @@ export default function Footer({ onOpenPolicy, onSelectService, onNavigate }) {
             </p>
             <div className="footer-social-links">
               <a
-                href="https://wa.me/918531807705?text=Hello%20Night%20Owls%20Studio"
+                href={`https://wa.me/${siteSettings?.whatsapp || FALLBACK_WHATSAPP}?text=Hello%20Night%20Owls%20Studio`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
@@ -49,7 +70,7 @@ export default function Footer({ onOpenPolicy, onSelectService, onNavigate }) {
                 <MessageCircle size={18} />
               </a>
               <a
-                href="https://www.instagram.com/night_owls_studios/"
+                href={siteSettings?.instagram || FALLBACK_INSTA}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
@@ -57,7 +78,7 @@ export default function Footer({ onOpenPolicy, onSelectService, onNavigate }) {
               >
                 <Instagram size={18} />
               </a>
-              <a href="mailto:contact.nightowls.team@gmail.com" className="social-icon" aria-label="Email">
+              <a href={`mailto:${siteSettings?.contact_email || FALLBACK_EMAIL}`} className="social-icon" aria-label="Email">
                 <Mail size={18} />
               </a>
             </div>
@@ -96,10 +117,10 @@ export default function Footer({ onOpenPolicy, onSelectService, onNavigate }) {
           <div className="footer-contact-col">
             <h4 className="footer-heading">Direct Connect</h4>
             <ul className="footer-contact-list">
-              <li><Phone size={16} /> <a href="tel:8531807705" style={{ color: 'inherit' }}>+91 85318 07705</a></li>
-              <li><MessageCircle size={16} /> <a href="https://wa.me/918531807705" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>WhatsApp Support</a></li>
-              <li><Instagram size={16} /> <a href="https://www.instagram.com/night_owls_studios/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>@night_owls_studios</a></li>
-              <li><Mail size={16} /> <a href="mailto:contact.nightowls.team@gmail.com" style={{ color: 'inherit' }}>contact.nightowls.team@gmail.com</a></li>
+              <li><Phone size={16} /> <a href={`tel:${siteSettings?.whatsapp || FALLBACK_WHATSAPP}`} style={{ color: 'inherit' }}>{siteSettings?.phone || FALLBACK_PHONE}</a></li>
+              <li><MessageCircle size={16} /> <a href={`https://wa.me/${siteSettings?.whatsapp || FALLBACK_WHATSAPP}`} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>WhatsApp Support</a></li>
+              <li><Instagram size={16} /> <a href={siteSettings?.instagram || FALLBACK_INSTA} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{siteSettings?.instagram ? '@' + siteSettings.instagram.split('/').filter(Boolean).pop() : '@night_owls_studios'}</a></li>
+              <li><Mail size={16} /> <a href={`mailto:${siteSettings?.contact_email || FALLBACK_EMAIL}`} style={{ color: 'inherit' }}>{siteSettings?.contact_email || FALLBACK_EMAIL}</a></li>
             </ul>
           </div>
         </div>

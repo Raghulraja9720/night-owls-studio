@@ -14,9 +14,9 @@ const targetDirs = [
 async function generate() {
   console.log('Generating perfectly centered Raghul Raja avatar images...');
 
-  // Extract square 460x460: left=75, top=50 (Center X = 305, matching Raghul's true head center)
+  // Extract square 560x560: left=25, top=0 (Center X = 305, matching Raghul's true head center)
   const masterBuffer = await sharp(inputPath)
-    .extract({ left: 75, top: 50, width: 460, height: 460 })
+    .extract({ left: 25, top: 0, width: 560, height: 560 })
     .resize(640, 640)
     .toBuffer();
 

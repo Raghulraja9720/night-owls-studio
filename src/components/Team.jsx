@@ -1,77 +1,64 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Crown, Target, Search, Share2, Film } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
-const members = [
-  {
-    name: 'Sivamanikandan P',
-    role: 'Team Leader & Web/App Developer',
-    dept: 'Web & App Development',
-    bio: 'Leads the team and builds modern websites and web applications that are fast, responsive, and reliable.',
-    image: '/assets/images/sivamanikandan.jpg',
-    webp140: '/assets/images/sivamanikandan-140.webp',
-    webp264: '/assets/images/sivamanikandan-264.webp',
-    webp: '/assets/images/sivamanikandan.webp',
-    skills: ['Web Development', 'App Development', 'Full-Stack Development'],
-    icon: Crown,
-    objectPosition: 'center center'
-  },
-  {
-    name: 'Rithanya RS',
-    role: 'Meta Ads Specialist',
-    dept: 'Meta Ads & Growth',
-    bio: 'Creates and manages Meta ad campaigns that help businesses reach the right audience and generate more leads.',
-    image: '/assets/images/rithanya.jpg',
-    webp140: '/assets/images/rithanya-140.webp',
-    webp264: '/assets/images/rithanya-264.webp',
-    webp: '/assets/images/rithanya.webp',
-    skills: ['Meta Ads', 'Campaign Management', 'Lead Generation'],
-    icon: Target,
-    objectPosition: 'center center'
-  },
-  {
-    name: 'Raghul Raja V',
-    role: 'SEO Specialist',
-    dept: 'SEO & Organic Growth',
-    bio: 'Optimizes websites to improve Google rankings, increase organic traffic, and help businesses get found online.',
-    image: '/assets/images/raghulraja.jpg',
-    webp140: '/assets/images/raghulraja-140.webp',
-    webp264: '/assets/images/raghulraja-264.webp',
-    webp: '/assets/images/raghulraja.webp',
-    skills: ['SEO', 'Keyword Strategy', 'Website Optimization'],
-    icon: Search,
-    objectPosition: 'center center'
-  },
-  {
-    name: 'Shivaranjani K',
-    role: 'Social Media Manager',
-    dept: 'Social Media Management',
-    bio: 'Manages social media content and strategies to build brand awareness, engage audiences, and grow online presence.',
-    image: '/assets/images/shivaranjani.jpg',
-    webp140: '/assets/images/shivaranjani-140.webp',
-    webp264: '/assets/images/shivaranjani-264.webp',
-    webp: '/assets/images/shivaranjani.webp',
-    skills: ['Social Media', 'Content Strategy', 'Brand Growth'],
-    icon: Share2,
-    objectPosition: 'center center'
-  },
-  {
-    name: 'Sarathy',
-    role: 'Video Editor & Motion Designer',
-    dept: 'Video & Motion Design',
-    bio: 'Creates engaging videos, reels, and promotional content that help brands attract attention and communicate their message effectively.',
-    image: '/assets/images/sarathy-v2.jpg',
-    webp140: '/assets/images/sarathy-v2-140.webp',
-    webp264: '/assets/images/sarathy-v2-264.webp',
-    webp: '/assets/images/sarathy-v2.webp',
-    skills: ['Video Editing', 'Motion Graphics', 'Reels', 'Promotional Content'],
-    icon: Film,
-    objectPosition: 'center 12%'
+// Helper to map DB icon name to Lucide component
+const getIcon = (iconName) => {
+  switch (iconName) {
+    case 'Crown': return Crown;
+    case 'Target': return Target;
+    case 'Search': return Search;
+    case 'Share2': return Share2;
+    case 'Film': return Film;
+    default: return Crown;
   }
-];
+};
 
 export default function Team() {
   const [isVisible, setIsVisible] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('team_members')
+          .select('*')
+          .eq('status', 'PUBLISHED')
+          .order('display_order', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching team members from Supabase:', error);
+          return;
+        }
+
+        if (data) {
+          const mappedData = data.map(dbMember => {
+            const baseImg = dbMember.image_url || '/assets/images/placeholder.jpg';
+            
+            return {
+              name: dbMember.name,
+              role: dbMember.role,
+              dept: dbMember.department || 'Night Owls Team',
+              bio: dbMember.bio,
+              image: baseImg,
+              skills: dbMember.skills || [],
+              icon: getIcon(dbMember.icon),
+              objectPosition: 'center center'
+            };
+          });
+          setMembers(mappedData);
+        }
+      } catch (err) {
+        console.error('Exception fetching team:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeam();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -119,23 +106,16 @@ export default function Team() {
 
                 {/* Avatar Frame with Gold Gradient Ring */}
                 <div className="team-avatar-wrap">
-                  <picture style={{ display: 'contents' }}>
-                    <source
-                      type="image/webp"
-                      srcSet={`${member.webp140} 140w, ${member.webp264} 264w, ${member.webp} 380w`}
-                      sizes="140px"
-                    />
-                    <img
-                      src={member.image}
-                      alt={`${member.name} - ${member.role}`}
-                      className="team-avatar-img"
-                      style={{ objectPosition: member.objectPosition || 'center 15%' }}
-                      loading="lazy"
-                      decoding="async"
-                      width="140"
-                      height="140"
-                    />
-                  </picture>
+                  <img
+                    src={member.image}
+                    alt={`${member.name} - ${member.role}`}
+                    className="team-avatar-img"
+                    style={{ objectPosition: member.objectPosition || 'center 15%' }}
+                    loading="lazy"
+                    decoding="async"
+                    width="140"
+                    height="140"
+                  />
                   <div className="team-badge-icon" aria-label={member.role}>
                     <IconComponent size={16} />
                   </div>

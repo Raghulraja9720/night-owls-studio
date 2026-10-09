@@ -59,7 +59,7 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
                   type="image/webp"
                   srcSet="/assets/logo/night-owls-logo-40.webp 1x, /assets/logo/night-owls-logo-80.webp 2x"
                 />
-                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" decoding="async" />
+                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" loading="eager" fetchPriority="high" decoding="async" />
               </picture>
             </div>
             <div className="brand-text">
@@ -73,18 +73,27 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
             <ul className="nav-links">
               <li>
                 <a
-                  href="/#about"
-                  className={`nav-link ${currentPage === 'home' && activeSection === 'about' ? 'active' : ''}`}
-                  onClick={(e) => handleNavClick(e, 'home', 'about')}
+                  href="/"
+                  className={`nav-link ${currentPage === 'home' && activeSection === 'hero' ? 'active' : ''}`}
+                  onClick={(e) => handleNavClick(e, 'home', 'hero')}
+                >
+                  Home
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/about"
+                  className={`nav-link ${currentPage === 'about' || (currentPage === 'home' && activeSection === 'about') ? 'active' : ''}`}
+                  onClick={(e) => handleNavClick(e, 'about')}
                 >
                   About
                 </a>
               </li>
               <li>
                 <a
-                  href="/#services"
-                  className={`nav-link ${currentPage === 'home' && activeSection === 'services' ? 'active' : ''}`}
-                  onClick={(e) => handleNavClick(e, 'home', 'services')}
+                  href="/services"
+                  className={`nav-link ${currentPage === 'services' || (currentPage === 'home' && activeSection === 'services') ? 'active' : ''}`}
+                  onClick={(e) => handleNavClick(e, 'services')}
                 >
                   Services
                 </a>
@@ -118,9 +127,9 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
               </li>
               <li>
                 <a
-                  href="/#team"
-                  className={`nav-link ${currentPage === 'home' && activeSection === 'team' ? 'active' : ''}`}
-                  onClick={(e) => handleNavClick(e, 'home', 'team')}
+                  href="/team"
+                  className={`nav-link ${currentPage === 'team' || (currentPage === 'home' && activeSection === 'team') ? 'active' : ''}`}
+                  onClick={(e) => handleNavClick(e, 'team')}
                 >
                   Team
                 </a>
@@ -175,7 +184,7 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
                   type="image/webp"
                   srcSet="/assets/logo/night-owls-logo-40.webp 1x, /assets/logo/night-owls-logo-80.webp 2x"
                 />
-                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" decoding="async" />
+                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="nav-logo-img" width="40" height="40" loading="lazy" decoding="async" />
               </picture>
             </div>
             <div className="brand-text">
@@ -190,14 +199,14 @@ export default function Navbar({ currentPage = 'home', onNavigate }) {
 
         <ul className="drawer-links">
           <li><a href="/" className={`drawer-link ${currentPage === 'home' && activeSection === 'hero' ? 'active' : ''}`} onClick={(e) => handleNavClick(e, 'home', 'hero')}>Home</a></li>
-          <li><a href="/#about" className="drawer-link" onClick={(e) => handleNavClick(e, 'home', 'about')}>About</a></li>
-          <li><a href="/#services" className="drawer-link" onClick={(e) => handleNavClick(e, 'home', 'services')}>Services</a></li>
+          <li><a href="/about" className={`drawer-link ${currentPage === 'about' ? 'active' : ''}`} onClick={(e) => handleNavClick(e, 'about')}>About</a></li>
+          <li><a href="/services" className={`drawer-link ${currentPage === 'services' ? 'active' : ''}`} onClick={(e) => handleNavClick(e, 'services')}>Services</a></li>
           <li><a href="/#why-us" className="drawer-link" onClick={(e) => handleNavClick(e, 'home', 'why-us')}>Why Choose Us</a></li>
           <li><a href="/#process" className="drawer-link" onClick={(e) => handleNavClick(e, 'home', 'process')}>Our Process</a></li>
           <li><a href="/work" className={`drawer-link ${currentPage === 'work' ? 'active' : ''}`} onClick={(e) => handleNavClick(e, 'work')}>Explore Works</a></li>
-          <li><a href="/#team" className="drawer-link" onClick={(e) => handleNavClick(e, 'home', 'team')}>Our Team</a></li>
+          <li><a href="/team" className={`drawer-link ${currentPage === 'team' ? 'active' : ''}`} onClick={(e) => handleNavClick(e, 'team')}>Our Team</a></li>
           <li><a href="/#guarantee" className="drawer-link" onClick={(e) => handleNavClick(e, 'home', 'guarantee')}>Why Trust Us</a></li>
-          <li><a href="/#contact" className="drawer-link" onClick={(e) => handleNavClick(e, 'home', 'contact')}>Contact</a></li>
+          <li><a href="/contact" className={`drawer-link ${currentPage === 'contact' ? 'active' : ''}`} onClick={(e) => handleNavClick(e, 'contact')}>Contact</a></li>
         </ul>
 
         <div className="drawer-footer">
