@@ -1,13 +1,14 @@
 -- =====================================================================
 -- NIGHT OWLS STUDIO CMS: COMPLETE DATABASE RESET & SETUP (ALL-IN-ONE)
 -- =====================================================================
--- How to run:
--- 1. Open your Supabase Project Dashboard (https://supabase.com/dashboard)
--- 2. Go to the "SQL Editor" in the left sidebar.
--- 3. Click "New query", paste this entire script, and click "Run".
+-- How to use in your NEW Supabase Project:
+-- 1. Create your new project in Supabase (https://supabase.com/dashboard)
+-- 2. Go to "SQL Editor" in the left sidebar.
+-- 3. Click "+ New query", paste this ENTIRE file, and click "Run".
+-- 4. Copy your new Project URL & Anon Key into your local .env file.
 -- =====================================================================
 
--- STEP 1: DROP OLD TABLES (CLEARS THE MESS / PREVENTS CONFLICTS)
+-- STEP 1: DROP OLD TABLES IF ANY EXIST (PREVENTS CONFLICTS)
 DROP TABLE IF EXISTS activity_logs CASCADE;
 DROP TABLE IF EXISTS internal_messages CASCADE;
 DROP TABLE IF EXISTS inquiries CASCADE;
@@ -185,7 +186,7 @@ CREATE POLICY "Public can view settings" ON site_settings FOR SELECT USING (true
 CREATE POLICY "Admins can manage settings" ON site_settings FOR ALL USING (auth.role() = 'authenticated');
 
 
--- STEP 4: SEED INITIAL DATA
+-- STEP 4: SEED INITIAL DATA (ALL PRESERVED NIGHT OWLS STUDIO CONTENT)
 
 -- 1. Site Settings
 INSERT INTO site_settings (
@@ -237,7 +238,8 @@ VALUES
 ('Rithanya RS', 'Meta Ads Specialist', 'Meta Ads & Growth', 'Creates and manages Meta ad campaigns that help businesses reach the right audience and generate more leads.', '/assets/images/rithanya.jpg', 'Target', 'PUBLISHED', 2),
 ('Raghul Raja V', 'SEO Specialist', 'SEO & Organic Growth', 'Optimizes websites to improve Google rankings, increase organic traffic, and help businesses get found online.', '/assets/images/raghulraja.jpg', 'Search', 'PUBLISHED', 3),
 ('Shivaranjani K', 'Social Media Manager', 'Social Media Management', 'Manages social media content and strategies to build brand awareness, engage audiences, and grow online presence.', '/assets/images/shivaranjani.jpg', 'Share2', 'PUBLISHED', 4),
-('Sarathy', 'Video Editor & Motion Designer', 'Video & Motion Design', 'Creates engaging videos, reels, and promotional content that help brands attract attention and communicate their message effectively.', '/assets/images/sarathy-v2.jpg', 'Film', 'PUBLISHED', 5);
+('Sarathy', 'Video Editor & Motion Designer', 'Video & Motion Design', 'Creates engaging videos, reels, and promotional content that help brands attract attention and communicate their message effectively.', '/assets/images/sarathy-v2.jpg', 'Film', 'PUBLISHED', 5)
+ON CONFLICT (id) DO NOTHING;
 
 -- STEP 5: SETUP STORAGE BUCKET FOR MEDIA
 INSERT INTO storage.buckets (id, name, public)
@@ -256,5 +258,67 @@ BEGIN
     SELECT 1 FROM pg_policies WHERE schemaname = 'storage' AND tablename = 'objects' AND policyname = 'Admins can manage media storage'
   ) THEN
     CREATE POLICY "Admins can manage media storage" ON storage.objects FOR ALL USING (bucket_id = 'media' AND auth.role() = 'authenticated');
+  END IF;
+END $$;
+
+-- STEP 6: CREATE ADMIN ACCOUNT (DEFAULT CREDENTIALS)
+-- Email: admin@nightowls.com
+-- Password: AdminPassword123!
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+DO $$
+DECLARE
+  new_user_id uuid := gen_random_uuid();
+  admin_email text := 'admin@nightowls.com';       -- You can change this email
+  admin_password text := 'AdminPassword123!';     -- You can change this password
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = admin_email) THEN
+    INSERT INTO auth.users (
+      id,
+      instance_id,
+      aud,
+      role,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      created_at,
+      updated_at,
+      confirmation_token
+    ) VALUES (
+      new_user_id,
+      '00000000-0000-0000-0000-000000000000',
+      'authenticated',
+      'authenticated',
+      admin_email,
+      crypt(admin_password, gen_salt('bf')),
+      now(),
+      '{"provider":"email","providers":["email"]}'::jsonb,
+      '{"full_name":"Night Owls Admin"}'::jsonb,
+      now(),
+      now(),
+      ''
+    );
+
+    INSERT INTO auth.identities (
+      id,
+      user_id,
+      identity_data,
+      provider,
+      provider_id,
+      last_sign_in_at,
+      created_at,
+      updated_at
+    ) VALUES (
+      new_user_id,
+      new_user_id,
+      jsonb_build_object('sub', new_user_id::text, 'email', admin_email),
+      'email',
+      admin_email,
+      now(),
+      now(),
+      now()
+    );
   END IF;
 END $$;
