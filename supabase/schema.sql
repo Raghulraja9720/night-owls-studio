@@ -1,6 +1,8 @@
--- Supabase Schema for Night Owls Studio CMS (Final Consolidated)
+-- =========================================================
+-- Supabase Schema for Night Owls Studio CMS (Complete)
+-- =========================================================
 
--- 1. Create Projects Table
+-- 1. Projects Table
 CREATE TABLE projects (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   title text NOT NULL,
@@ -26,7 +28,7 @@ CREATE TABLE projects (
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. Create Services Table
+-- 2. Services Table
 CREATE TABLE services (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   title text NOT NULL,
@@ -42,7 +44,7 @@ CREATE TABLE services (
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. Create Team Members Table
+-- 3. Team Members Table
 CREATE TABLE team_members (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   name text NOT NULL,
@@ -58,7 +60,7 @@ CREATE TABLE team_members (
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Create Meta Ads Videos Table
+-- 4. Meta Ads Videos Table
 CREATE TABLE meta_ads_videos (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   title text NOT NULL,
@@ -73,7 +75,22 @@ CREATE TABLE meta_ads_videos (
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 5. Create Internal Messages Table (Contact Form)
+-- 5. Client Inquiries Table (Website Contact Form)
+CREATE TABLE inquiries (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  name text NOT NULL,
+  email text NOT NULL,
+  phone text,
+  company text,
+  service text,
+  message text,
+  status text DEFAULT 'NEW' CHECK (status IN ('NEW', 'CONTACTED', 'IN_PROGRESS', 'CONVERTED', 'CLOSED', 'ARCHIVED')),
+  internal_notes text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 6. Internal Messages Table (Team Communication)
 CREATE TABLE internal_messages (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   sender_email text NOT NULL,
@@ -84,7 +101,17 @@ CREATE TABLE internal_messages (
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 6. Create Site Settings Table
+-- 7. System Activity Logs Table
+CREATE TABLE activity_logs (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  admin_email text NOT NULL,
+  action text NOT NULL,
+  entity_type text NOT NULL,
+  entity_name text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 8. Site Settings Table
 CREATE TABLE site_settings (
   id integer PRIMARY KEY DEFAULT 1,
   studio_name text DEFAULT 'Night Owls Studio',
@@ -100,30 +127,44 @@ CREATE TABLE site_settings (
   CONSTRAINT site_settings_single_row CHECK (id = 1)
 );
 
-
 -- ==========================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ==========================================
 
+-- Projects
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public can view published projects" ON projects FOR SELECT USING (status = 'PUBLISHED');
 CREATE POLICY "Admins can manage projects" ON projects FOR ALL USING (auth.role() = 'authenticated');
 
+-- Services
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public can view published services" ON services FOR SELECT USING (status = 'PUBLISHED');
 CREATE POLICY "Admins can manage services" ON services FOR ALL USING (auth.role() = 'authenticated');
 
+-- Team Members
 ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public can view published team members" ON team_members FOR SELECT USING (status = 'PUBLISHED');
 CREATE POLICY "Admins can manage team members" ON team_members FOR ALL USING (auth.role() = 'authenticated');
 
+-- Meta Ads Videos
 ALTER TABLE meta_ads_videos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public can view published meta ads" ON meta_ads_videos FOR SELECT USING (status = 'PUBLISHED');
 CREATE POLICY "Admins can manage meta ads" ON meta_ads_videos FOR ALL USING (auth.role() = 'authenticated');
 
+-- Inquiries (Public can submit; Admins manage)
+ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public can submit inquiries" ON inquiries FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admins can manage inquiries" ON inquiries FOR ALL USING (auth.role() = 'authenticated');
+
+-- Internal Messages
 ALTER TABLE internal_messages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins can manage internal messages" ON internal_messages FOR ALL USING (auth.role() = 'authenticated');
 
+-- Activity Logs
+ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admins can manage activity logs" ON activity_logs FOR ALL USING (auth.role() = 'authenticated');
+
+-- Site Settings
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public can view settings" ON site_settings FOR SELECT USING (true);
 CREATE POLICY "Admins can manage settings" ON site_settings FOR ALL USING (auth.role() = 'authenticated');
