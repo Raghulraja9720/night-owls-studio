@@ -74,7 +74,15 @@ export default function AdminLayout({ session }) {
       {/* Sidebar */}
       <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="admin-sidebar-header">
-          <h2 className="admin-brand">NIGHT OWLS<span>.</span></h2>
+          <div className="admin-brand-wrap">
+            <div className="admin-logo-circle">
+              <picture>
+                <source type="image/webp" srcSet="/assets/logo/night-owls-logo-40.webp 1x, /assets/logo/night-owls-logo-80.webp 2x" />
+                <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Logo" className="admin-logo-img" width="36" height="36" />
+              </picture>
+            </div>
+            <h2 className="admin-brand">NIGHT OWLS<span>.</span></h2>
+          </div>
           <button className="admin-close-sidebar" onClick={() => setSidebarOpen(false)}>
             <X size={24} />
           </button>
@@ -115,9 +123,17 @@ export default function AdminLayout({ session }) {
       {/* Main Content */}
       <div className="admin-main-wrapper">
         <header className="admin-topbar">
-          <button className="admin-menu-toggle" onClick={() => setSidebarOpen(true)}>
-            <Menu size={24} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button className="admin-menu-toggle" onClick={() => setSidebarOpen(true)}>
+              <Menu size={24} />
+            </button>
+            <div className="admin-topbar-mobile-brand">
+              <div className="admin-logo-circle admin-logo-circle-sm">
+                <img src="/assets/logo/night-owls-logo-40.webp" alt="Night Owls Logo" className="admin-logo-img" width="28" height="28" />
+              </div>
+              <span className="admin-topbar-brand-text">NIGHT OWLS<span>.</span></span>
+            </div>
+          </div>
           
           <div className="admin-topbar-right">
             <button className="admin-notification-btn" onClick={() => navigate('/admin/inquiries')}>

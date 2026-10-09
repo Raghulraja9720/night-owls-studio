@@ -33,6 +33,12 @@ export default function Login() {
     <div className="admin-login-container">
       <div className="admin-login-card">
         <div className="admin-login-header">
+          <div className="admin-login-logo-wrap">
+            <picture>
+              <source type="image/webp" srcSet="/assets/logo/night-owls-logo-80.webp 1x, /assets/logo/night-owls-logo-112.webp 2x" />
+              <img src="/assets/logo/night owls logo.png" alt="Night Owls Studio Emblem" className="admin-login-logo-img" width="64" height="64" />
+            </picture>
+          </div>
           <h1 className="admin-login-brand">NIGHT OWLS<span>.</span></h1>
           <p className="admin-login-subtitle">Sign in to Admin CMS</p>
         </div>
