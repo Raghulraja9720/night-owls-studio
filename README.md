@@ -71,7 +71,22 @@ Follow the interactive prompts (press Enter for defaults), then run `npx vercel 
 
 ---
 
-## 📧 How to Setup EmailJS (Receive Inquiries to Gmail)
+## 🗄️ Supabase Backend & Admin CMS Setup
+
+All database migrations and seed scripts are located in the `supabase/` folder:
+
+- **`supabase/00_full_reset_and_setup.sql`**: Complete setup script (drops old tables, creates 8 tables, sets up RLS policies, seeds data, configures `media` storage bucket, and creates the admin account).
+- **`supabase/create_admin.sql`**: Resets and creates the admin user.
+- **`supabase/delete_admin.sql`**: Removes the admin account if needed.
+- **`supabase/schema.sql`**: Consolidated table definitions and RLS policies.
+- **`supabase/seed.sql`**: Initial website seed data (services, projects, team, site settings).
+
+### Admin Login Credentials:
+- **Email:** `admin@nightowls.com`
+- **Password:** `AdminPassword123!`
+- **Login URL:** `/admin/login`
+
+---
 
 1. **Sign Up**: Create a free account at [emailjs.com](https://www.emailjs.com/) (200 free emails/month).
 2. **Add Email Service**:
