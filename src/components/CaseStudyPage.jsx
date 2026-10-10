@@ -62,8 +62,8 @@ export default function CaseStudyPage({ onRequestProject, onNavigate }) {
         setIsPreview(false);
       }
 
-      // 1. Try querying by slug first
-      let query = supabase.from('projects').select('*').eq('slug', slug);
+      // 1. Try querying by slug first (case-insensitive)
+      let query = supabase.from('projects').select('*').ilike('slug', slug);
       if (!validPreview) {
         query = query.eq('status', 'PUBLISHED');
       }
@@ -79,6 +79,24 @@ export default function CaseStudyPage({ onRequestProject, onNavigate }) {
         const idResult = await idQuery.maybeSingle();
         data = idResult.data;
         if (idResult.error) dbError = idResult.error;
+      }
+
+      // 3. Fallback for legacy URLs
+      if (!data && slug) {
+        const legacyMap = {
+          'aruna': '7498c8fa-4750-458e-8c90-b9d819893223',
+          'padma-tours': 'ab874d0e-1846-4edf-9879-6231f6a66fdc',
+          'padma': 'ab874d0e-1846-4edf-9879-6231f6a66fdc',
+          'sai': '2521d6a6-c6fc-41f5-b3ed-6d8f6b8bd207'
+        };
+        const mappedId = legacyMap[slug.toLowerCase()];
+        if (mappedId) {
+          let fallbackQuery = supabase.from('projects').select('*').eq('id', mappedId);
+          if (!validPreview) fallbackQuery = fallbackQuery.eq('status', 'PUBLISHED');
+          const fbResult = await fallbackQuery.maybeSingle();
+          data = fbResult.data;
+          if (fbResult.error && !dbError) dbError = fbResult.error;
+        }
       }
 
       if (dbError) throw dbError;

@@ -113,13 +113,29 @@ export default function ProjectEditor() {
         throw new Error('Project Title is required.');
       }
 
-      // Auto-generate slug if empty
+      // Auto-generate or normalize slug
       let finalSlug = formData.slug?.trim();
       if (!finalSlug) {
         finalSlug = formData.title
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
+      } else {
+        finalSlug = finalSlug
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      }
+
+      // Check slug uniqueness
+      let slugCheckQuery = supabase.from('projects').select('id').eq('slug', finalSlug);
+      if (!isNew && id) {
+        slugCheckQuery = slugCheckQuery.neq('id', id);
+      }
+      const { data: existingSlugData } = await slugCheckQuery.maybeSingle();
+      if (existingSlugData) {
+        setActiveTab('overview');
+        throw new Error(`The slug "${finalSlug}" is already in use by another project. Please provide a unique slug.`);
       }
 
       // Validate cover image if provided
