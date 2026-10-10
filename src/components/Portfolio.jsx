@@ -535,7 +535,7 @@ export default function Portfolio({ onSelectProject, onRequestProject, isStandal
                         className="btn-visit-live"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <span>Visit Live Website</span>
+                        <span>Live Site</span>
                         <ExternalLink size={14} />
                       </a>
                     )}
