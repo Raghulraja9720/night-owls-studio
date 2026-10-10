@@ -96,10 +96,10 @@ export default function Team() {
                         <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'var(--admin-border)', overflow: 'hidden', flexShrink: 0 }}>
                            {member.image ? <img src={member.image} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : null}
                         </div>
-                        <span style={{ wordBreak: 'break-word' }}>{member.name}</span>
+                        <span>{member.name}</span>
                       </div>
                     </td>
-                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', wordBreak: 'break-word' }}>{member.role}</td>
+                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)' }}>{member.role}</td>
                     <td style={{ padding: '0.875rem 1rem' }}>
                       <span style={{ 
                         padding: '0.25rem 0.65rem', 

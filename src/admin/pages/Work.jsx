@@ -88,8 +88,8 @@ export default function Work() {
               ) : (
                 filteredProjects.map(project => (
                   <tr key={project.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td style={{ padding: '0.875rem 1rem', fontWeight: 500, wordBreak: 'break-word' }}>{project.title}</td>
-                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', wordBreak: 'break-word' }}>{project.category}</td>
+                    <td style={{ padding: '0.875rem 1rem', fontWeight: 500 }}>{project.title}</td>
+                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)' }}>{project.category}</td>
                     <td style={{ padding: '0.875rem 1rem' }}>
                       <span style={{ 
                         padding: '0.25rem 0.65rem', 

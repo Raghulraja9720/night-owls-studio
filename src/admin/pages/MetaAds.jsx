@@ -123,12 +123,12 @@ export default function MetaAds() {
                           )}
                         </div>
                         <div style={{ minWidth: 0 }}>
-                          <div style={{ wordBreak: 'break-word' }}>{ad.title}</div>
+                          <div>{ad.title}</div>
                           {ad.platform && <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>{ad.platform}</div>}
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', wordBreak: 'break-word' }}>{ad.business_name || '-'}</td>
+                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)' }}>{ad.business_name || '-'}</td>
                     <td style={{ padding: '0.875rem 1rem' }}>
                       <span style={{ 
                         padding: '0.25rem 0.65rem', 

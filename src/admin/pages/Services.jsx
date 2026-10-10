@@ -91,8 +91,8 @@ export default function Services() {
               ) : (
                 filteredServices.map(service => (
                   <tr key={service.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td style={{ padding: '0.875rem 1rem', fontWeight: 500, wordBreak: 'break-word' }}>{service.title}</td>
-                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', wordBreak: 'break-word' }}>
+                    <td style={{ padding: '0.875rem 1rem', fontWeight: 500 }}>{service.title}</td>
+                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)' }}>
                       {service.short_description?.substring(0, 50)}{service.short_description?.length > 50 ? '...' : ''}
                     </td>
                     <td style={{ padding: '0.875rem 1rem' }}>

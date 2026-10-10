@@ -167,11 +167,11 @@ export default function Inquiries() {
                     <td style={{ padding: '0.875rem 1rem' }}>
                       <div style={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {inquiry.status === 'NEW' && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--admin-warning)', display: 'inline-block', flexShrink: 0 }}></span>}
-                        <span style={{ wordBreak: 'break-word' }}>{inquiry.name}</span>
+                        <span>{inquiry.name}</span>
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', wordBreak: 'break-word' }}>{inquiry.company || 'Individual'}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)' }}>{inquiry.company || 'Individual'}</div>
                     </td>
-                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', wordBreak: 'break-word' }}>{inquiry.service}</td>
+                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)' }}>{inquiry.service}</td>
                     <td style={{ padding: '0.875rem 1rem' }}>
                       <span style={{ 
                         padding: '0.25rem 0.65rem', 
