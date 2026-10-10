@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { X, ArrowRight, Lock, CheckCircle2, Zap, TrendingUp, Sparkles, ExternalLink } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, ArrowRight, Lock, CheckCircle2, Zap, TrendingUp, Sparkles, ExternalLink, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const projectsData = {
   'sai-indirabala': {
@@ -28,7 +29,66 @@ const projectsData = {
 };
 
 export function ProjectModal({ projectId, onClose, onRequestProject }) {
-  const data = projectsData[projectId];
+  const [data, setData] = useState(projectsData[projectId] || null);
+  const [loading, setLoading] = useState(!projectsData[projectId]);
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    if (projectsData[projectId]) {
+      setData(projectsData[projectId]);
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    setLoading(true);
+
+    const fetchProject = async () => {
+      try {
+        let query = supabase.from('projects').select('*').eq('id', projectId);
+        let { data: res, error } = await query.maybeSingle();
+
+        if (!res) {
+          const slugQuery = await supabase.from('projects').select('*').eq('slug', projectId).maybeSingle();
+          res = slugQuery.data;
+        }
+
+        if (res && isMounted) {
+          let domain = '';
+          if (res.live_url) {
+            try {
+              domain = new URL(res.live_url).hostname.replace(/^www\./, '');
+            } catch {
+              domain = res.live_url;
+            }
+          }
+
+          setData({
+            title: res.title,
+            category: res.category || 'Website Development',
+            domain,
+            liveUrl: res.live_url,
+            service: res.category || 'Website Development',
+            image: res.cover_image || '/assets/images/sai-indirabala.png',
+            description: res.full_description || res.short_description || '',
+            deliverables: res.technologies || [],
+            results: res.results || res.solution || ''
+          });
+        }
+      } catch (err) {
+        console.error('Error in ProjectModal fetch:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchProject();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [projectId]);
 
   useEffect(() => {
     if (projectId) {
@@ -46,7 +106,7 @@ export function ProjectModal({ projectId, onClose, onRequestProject }) {
     }
   }, [projectId, onClose]);
 
-  if (!projectId || !data) return null;
+  if (!projectId || (!data && !loading)) return null;
 
   return (
     <div className="modal-backdrop open" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -82,7 +142,19 @@ export function ProjectModal({ projectId, onClose, onRequestProject }) {
               </a>
             </div>
             <picture style={{ display: 'contents' }}>
-              <img src={data.image} alt={data.title} className="modal-project-img" width="1024" height="521" loading="lazy" decoding="async" />
+              <img 
+                src={data.image} 
+                alt={data.title} 
+                className="modal-project-img" 
+                width="1024" 
+                height="521" 
+                loading="lazy" 
+                decoding="async" 
+                onError={(e) => {
+                  e.currentTarget.src = '/assets/images/sai-indirabala.png';
+                  e.currentTarget.onerror = null;
+                }}
+              />
             </picture>
           </div>
 

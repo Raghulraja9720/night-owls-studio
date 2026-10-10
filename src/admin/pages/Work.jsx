@@ -108,6 +108,17 @@ export default function Work() {
                     </td>
                     <td style={{ padding: '0.875rem 1rem', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <a 
+                          href={`/work/${project.slug || project.id}?preview=true`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="admin-btn-secondary" 
+                          style={{ padding: '0.45rem', minHeight: '36px' }} 
+                          title="View Case Study" 
+                          aria-label={`View ${project.title} case study`}
+                        >
+                          <ExternalLink size={16} />
+                        </a>
                         <Link to={`/admin/work/${project.id}`} className="admin-btn-secondary" style={{ padding: '0.45rem', minHeight: '36px' }} title="Edit" aria-label={`Edit ${project.title}`}>
                           <Edit2 size={16} />
                         </Link>

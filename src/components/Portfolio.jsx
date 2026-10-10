@@ -195,18 +195,30 @@ export default function Portfolio({ onSelectProject, onRequestProject, isStandal
 
         if (data) {
           // Map DB schema to frontend schema
-          const mappedData = data.map(dbProj => ({
-            id: dbProj.id,
-            category: dbProj.category || 'custom-furniture', // Provide a fallback category
-            domain: dbProj.live_url ? new URL(dbProj.live_url).hostname : '',
-            liveUrl: dbProj.live_url,
-            badge: dbProj.short_description || '',
-            tags: dbProj.technologies || [],
-            name: dbProj.title,
-            client: '', // Add mapping if available
-            summary: dbProj.full_description,
-            image: dbProj.cover_image || '/assets/images/placeholder.jpg'
-          }));
+          const mappedData = data.map(dbProj => {
+            let domain = '';
+            if (dbProj.live_url) {
+              try {
+                domain = new URL(dbProj.live_url).hostname.replace(/^www\./, '');
+              } catch {
+                domain = dbProj.live_url;
+              }
+            }
+
+            return {
+              id: dbProj.id,
+              slug: dbProj.slug || dbProj.id,
+              category: dbProj.category || 'custom-furniture',
+              domain,
+              liveUrl: dbProj.live_url,
+              badge: dbProj.short_description || '',
+              tags: dbProj.technologies || [],
+              name: dbProj.title,
+              client: '',
+              summary: dbProj.full_description,
+              image: dbProj.cover_image || '/assets/images/sai-indirabala.png'
+            };
+          });
           setProjects(mappedData);
         }
       } catch (err) {
@@ -361,151 +373,177 @@ export default function Portfolio({ onSelectProject, onRequestProject, isStandal
 
         {/* Projects Grid / Flagship Showcase */}
         <div className={`projects-grid ${filteredProjects.length === 1 ? 'single-flagship-grid' : ''}`}>
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className="project-card flagship-showcase-card"
-              role="button"
-              tabIndex={0}
-              aria-label={`View ${project.name} case study`}
-              onClick={() => onSelectProject(project.id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectProject(project.id);
-                }
-              }}
-            >
-              {/* Browser Window Chrome Frame Header */}
-              <div className="project-mockup-header">
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mockup-url-bar mockup-url-link"
-                  onClick={(e) => e.stopPropagation()}
-                  title="Open live website in new tab"
-                >
-                  <Lock size={10} className="mockup-lock" />
-                  <span className="mockup-domain">{project.domain}</span>
-                  <ExternalLink size={9} className="mockup-ext-icon" />
-                </a>
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mockup-status mockup-live-badge-link"
-                  onClick={(e) => e.stopPropagation()}
-                  title="Open live website in new tab"
-                >
-                  <span className="live-pulse"></span>
-                  <span className="mockup-status-label">Live Site ↗</span>
-                </a>
-              </div>
-
-              {/* Visual Showcase Box */}
-              <div className="project-image-box">
-                <picture style={{ display: 'contents' }}>
-                  {/* Since project images are dynamic from Supabase, rely on standard img loading or a dynamic srcSet if available */}
-                  <img
-                    src={project.image}
-                    alt={project.name}
-                    className="project-img flagship-img"
-                    loading="lazy"
-                    decoding="async"
-                    width="1024"
-                    height="521"
-                  />
-                </picture>
-
-                {/* Interactive Glassmorphic Hover Overlay */}
-                <div className="project-hover-overlay">
-                  <div className="overlay-actions-wrap">
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="overlay-action-btn primary live-url-btn"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ExternalLink size={15} />
-                      <span>Visit Live Website</span>
-                    </a>
-                    <button
-                      type="button"
-                      className="overlay-action-btn secondary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectProject(project.id);
-                      }}
-                      title="Read complete case study & technical architecture"
-                    >
-                      <Eye size={15} />
-                      <span>View Case Study</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card Content & Information Architecture */}
-              <div className="project-content">
-                {/* Badge and Tag Row */}
-                <div className="project-tag-wrap">
-                  <span className="case-study-badge">{project.badge}</span>
-                </div>
-
-                {/* Project Title with Arrow Affordance */}
-                <div className="project-title-row">
-                  <h3 className="project-name">{project.name}</h3>
-                  <div className="project-title-arrow-box">
-                    <ArrowUpRight size={16} className="project-title-arrow" />
-                  </div>
-                </div>
-
-                {/* Client Subtitle */}
-                <span className="project-client-name">
-                  Crafted for {project.client}
-                </span>
-
-                {/* Summary Description */}
-                <p className="project-summary">{project.summary}</p>
-
-                {/* General Scope / Highlight Pills */}
-                <div className="project-general-pills">
-                  <span className="gen-pill">3D Visualization</span>
-                  <span className="gen-pill">Custom Furniture</span>
-                  <span className="gen-pill">WhatsApp Enquiries</span>
-                  <span className="gen-pill">SEO Optimized</span>
-                </div>
-
-                {/* Card Bottom Access Strip */}
-                <div className="project-bottom">
-                  <button
-                    type="button"
-                    className="project-cta-btn secondary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectProject(project.id);
-                    }}
-                  >
-                    <Eye size={14} />
-                    <span>View Case Study</span>
-                  </button>
-
+          {filteredProjects.map((project) => {
+            const projectTarget = project.slug || project.id;
+            return (
+              <div
+                key={project.id}
+                className="project-card flagship-showcase-card"
+                role="button"
+                tabIndex={0}
+                aria-label={`View ${project.name} case study`}
+                onClick={() => onSelectProject(projectTarget)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectProject(projectTarget);
+                  }
+                }}
+              >
+                {/* Browser Window Chrome Frame Header */}
+                <div className="project-mockup-header">
                   <a
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-visit-live"
+                    className="mockup-url-bar mockup-url-link"
                     onClick={(e) => e.stopPropagation()}
+                    title="Open live website in new tab"
                   >
-                    <span>Visit Live Website</span>
-                    <ExternalLink size={14} />
+                    <Lock size={10} className="mockup-lock" />
+                    <span className="mockup-domain">{project.domain}</span>
+                    <ExternalLink size={9} className="mockup-ext-icon" />
+                  </a>
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mockup-status mockup-live-badge-link"
+                    onClick={(e) => e.stopPropagation()}
+                    title="Open live website in new tab"
+                  >
+                    <span className="live-pulse"></span>
+                    <span className="mockup-status-label">Live Site ↗</span>
                   </a>
                 </div>
+
+                {/* Visual Showcase Box */}
+                <div className="project-image-box">
+                  <picture style={{ display: 'contents' }}>
+                    <img
+                      src={project.image}
+                      alt={project.name}
+                      className="project-img flagship-img"
+                      loading="lazy"
+                      decoding="async"
+                      width="1024"
+                      height="521"
+                      onError={(e) => {
+                        e.currentTarget.src = '/assets/images/sai-indirabala.png';
+                        e.currentTarget.onerror = null;
+                      }}
+                    />
+                  </picture>
+
+                  {/* Interactive Glassmorphic Hover Overlay */}
+                  <div className="project-hover-overlay">
+                    <div className="overlay-actions-wrap">
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="overlay-action-btn primary live-url-btn"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink size={15} />
+                        <span>Visit Live Website</span>
+                      </a>
+                      <a
+                        href={`/work/${projectTarget}`}
+                        className="overlay-action-btn secondary"
+                        onClick={(e) => {
+                          if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onSelectProject(projectTarget);
+                          }
+                        }}
+                        title="Read complete case study & technical architecture"
+                      >
+                        <Eye size={15} />
+                        <span>View Case Study</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Content & Information Architecture */}
+                <div className="project-content">
+                  {/* Badge and Tag Row */}
+                  <div className="project-tag-wrap">
+                    <span className="case-study-badge">{project.badge}</span>
+                  </div>
+
+                  {/* Project Title with Arrow Affordance */}
+                  <div className="project-title-row">
+                    <h3 className="project-name">{project.name}</h3>
+                    <div className="project-title-arrow-box">
+                      <ArrowUpRight size={16} className="project-title-arrow" />
+                    </div>
+                  </div>
+
+                  {/* Client Subtitle */}
+                  {project.client && (
+                    <span className="project-client-name">
+                      Crafted for {project.client}
+                    </span>
+                  )}
+
+                  {/* Summary Description */}
+                  {project.summary && (
+                    <p className="project-summary">{project.summary}</p>
+                  )}
+
+                  {/* General Scope / Highlight Pills */}
+                  <div className="project-general-pills">
+                    {project.tags && project.tags.length > 0 ? (
+                      project.tags.slice(0, 4).map((tag, tIdx) => (
+                        <span key={tIdx} className="gen-pill">{tag}</span>
+                      ))
+                    ) : (
+                      <>
+                        <span className="gen-pill">3D Visualization</span>
+                        <span className="gen-pill">Custom Furniture</span>
+                        <span className="gen-pill">WhatsApp Enquiries</span>
+                        <span className="gen-pill">SEO Optimized</span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Card Bottom Access Strip */}
+                  <div className="project-bottom">
+                    <a
+                      href={`/work/${projectTarget}`}
+                      className="project-cta-btn secondary"
+                      onClick={(e) => {
+                        if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onSelectProject(projectTarget);
+                        }
+                      }}
+                    >
+                      <Eye size={14} />
+                      <span>View Case Study</span>
+                    </a>
+
+                    {project.liveUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-visit-live"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span>Visit Live Website</span>
+                        <ExternalLink size={14} />
+                      </a>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
           </>
         ) : (

@@ -15,6 +15,7 @@ import MobileBottomNav from './components/MobileBottomNav';
 
 // Lazy load non-critical and separate route components to reduce initial bundle size
 const WorksPage = React.lazy(() => import('./components/WorksPage'));
+const CaseStudyPage = React.lazy(() => import('./components/CaseStudyPage'));
 const ProjectModal = React.lazy(() => import('./components/Modals').then(m => ({ default: m.ProjectModal })));
 const PolicyModal = React.lazy(() => import('./components/Modals').then(m => ({ default: m.PolicyModal })));
 
@@ -24,6 +25,7 @@ export default function App() {
       const path = window.location.pathname.replace(/\/$/, '');
       const hash = window.location.hash;
       if (path === '/work' || hash === '#/work' || hash === '#work') return 'work';
+      if (path.startsWith('/work/') || path.startsWith('/case-study/')) return 'case-study';
       if (path === '/services') return 'services';
       if (path === '/about') return 'about';
       if (path === '/team') return 'team';
@@ -46,6 +48,7 @@ export default function App() {
       
       let targetPage = 'home';
       if (path === '/work' || hash === '#/work' || hash === '#work') targetPage = 'work';
+      else if (path.startsWith('/work/') || path.startsWith('/case-study/')) targetPage = 'case-study';
       else if (path === '/services') targetPage = 'services';
       else if (path === '/about') targetPage = 'about';
       else if (path === '/team') targetPage = 'team';
@@ -94,21 +97,29 @@ export default function App() {
 
     transitionTimerRef.current = setTimeout(() => {
       // Step 2: Swap the view state and reset scroll instantaneously while invisible
-      setCurrentPage(page);
       window.scrollTo({ top: 0, behavior: 'instant' });
 
-      if (page === 'work') {
+      if (page.startsWith('/work/') || page.startsWith('/case-study/')) {
+        setCurrentPage('case-study');
+        window.history.pushState({ page: 'case-study' }, '', page);
+      } else if (page === 'case-study') {
+        setCurrentPage('case-study');
+        window.history.pushState({ page: 'case-study' }, '', targetSection ? `/work/${targetSection}` : '/work');
+      } else if (page === 'work') {
+        setCurrentPage('work');
         window.history.pushState({ page: 'work' }, '', '/work');
       } else if (['services', 'about', 'team', 'contact'].includes(page)) {
+        setCurrentPage(page);
         window.history.pushState({ page }, '', `/${page}`);
       } else {
+        setCurrentPage('home');
         window.history.pushState({ page: 'home' }, '', targetSection ? `/#${targetSection}` : '/');
       }
 
       // Step 3: Trigger smooth entrance animation
       setTransitionState('entering');
 
-      if (targetSection) {
+      if (targetSection && !page.startsWith('/work/')) {
         setTimeout(() => scrollToSection(targetSection), 100);
         setTimeout(() => scrollToSection(targetSection), 350);
       }
@@ -148,13 +159,20 @@ export default function App() {
       {/* Top Page Route Transition Shimmer Bar */}
       <div className={`page-route-progress-bar ${transitionState !== 'idle' ? 'active' : ''}`} />
 
-      <Navbar currentPage={currentPage} onNavigate={navigateTo} />
+      <Navbar currentPage={currentPage === 'case-study' ? 'work' : currentPage} onNavigate={navigateTo} />
 
       <main className={`page-content-view page-view-${transitionState}`}>
         <Suspense fallback={<div className="loading-fallback">Loading...</div>}>
+          {currentPage === 'case-study' && (
+            <CaseStudyPage
+              onRequestProject={handleSelectService}
+              onNavigate={navigateTo}
+            />
+          )}
+
           {currentPage === 'work' && (
             <WorksPage
-              onSelectProject={setActiveProject}
+              onSelectProject={(target) => navigateTo(`/work/${target}`)}
               onRequestProject={handleSelectService}
               onBackToProcess={() => navigateTo('home', 'process')}
               onBackHome={() => navigateTo('home', 'process')}
@@ -210,7 +228,7 @@ export default function App() {
         onNavigate={navigateTo}
       />
 
-      <MobileBottomNav currentPage={currentPage} onNavigate={navigateTo} />
+      <MobileBottomNav currentPage={currentPage === 'case-study' ? 'work' : currentPage} onNavigate={navigateTo} />
 
       <FloatingWhatsApp />
 

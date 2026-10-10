@@ -204,6 +204,10 @@ export default function Media() {
                     alt={file.name} 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = '/assets/images/placeholder.jpg';
+                      e.currentTarget.onerror = null;
+                    }}
                   />
                   <div style={{ 
                     position: 'absolute', top: '0.5rem', right: '0.5rem', 

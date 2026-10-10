@@ -182,8 +182,16 @@ export default function TeamMemberEditor() {
                 <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.5rem', display: 'block' }}>Relative path or absolute URL to image.</span>
               </div>
               {formData.image_url && (
-                <div style={{ width: '150px', height: '150px', borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--admin-border)' }}>
-                  <img src={formData.image_url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ width: '150px', height: '150px', borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--admin-border)', background: '#050a16' }}>
+                  <img 
+                    src={formData.image_url} 
+                    alt="Preview" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    onError={(e) => {
+                      e.currentTarget.src = '/assets/images/placeholder.jpg';
+                      e.currentTarget.onerror = null;
+                    }}
+                  />
                 </div>
               )}
             </div>

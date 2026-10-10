@@ -115,6 +115,10 @@ export default function Team() {
                     decoding="async"
                     width="140"
                     height="140"
+                    onError={(e) => {
+                      e.currentTarget.src = '/assets/images/placeholder.jpg';
+                      e.currentTarget.onerror = null;
+                    }}
                   />
                   <div className="team-badge-icon" aria-label={member.role}>
                     <IconComponent size={16} />
