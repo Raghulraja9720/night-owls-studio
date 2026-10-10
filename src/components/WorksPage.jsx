@@ -3,10 +3,28 @@ import { ArrowLeft, Sparkles, MessageCircle, ArrowRight, ShieldCheck, Zap } from
 import Portfolio from './Portfolio';
 
 export default function WorksPage({ onSelectProject, onRequestProject, onBackHome, onBackToProcess }) {
-  const [activeTab, setActiveTab] = useState(null);
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '');
+      return hash === 'website' || hash === 'metaAds' ? hash : null;
+    }
+    return null;
+  });
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'website' || hash === 'metaAds') {
+        setActiveTab(hash);
+      } else if (!hash) {
+        setActiveTab(null);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Run once on mount
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const handleBack = onBackToProcess || onBackHome;

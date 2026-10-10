@@ -21,15 +21,13 @@ import { DEFAULT_PROJECT_PLACEHOLDER } from '../lib/imageUrlUtils';
 
 export default function CaseStudyPage({ onRequestProject, onNavigate }) {
   const { slug: paramSlug } = useParams();
-  const location = useLocation();
-  const pathParts = location.pathname.split('/').filter(Boolean);
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : location.pathname;
+  const pathParts = currentPath.split('/').filter(Boolean);
   const slugFromPath = (pathParts[0] === 'work' || pathParts[0] === 'case-study') && pathParts[1] ? pathParts[1] : '';
   const slug = paramSlug || slugFromPath;
 
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const isPreview = searchParams.get('preview') === 'true';
-
+  const [isPreview, setIsPreview] = useState(false);
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,9 +48,23 @@ export default function CaseStudyPage({ onRequestProject, onNavigate }) {
         return;
       }
 
+      // Check for preview param and admin session
+      const currentSearch = typeof window !== 'undefined' ? window.location.search : '';
+      const urlParams = new URLSearchParams(currentSearch);
+      const wantsPreview = urlParams.get('preview') === 'true';
+      
+      let validPreview = false;
+      if (wantsPreview) {
+        const { data: { session } } = await supabase.auth.getSession();
+        validPreview = !!session;
+        setIsPreview(validPreview);
+      } else {
+        setIsPreview(false);
+      }
+
       // 1. Try querying by slug first
       let query = supabase.from('projects').select('*').eq('slug', slug);
-      if (!isPreview) {
+      if (!validPreview) {
         query = query.eq('status', 'PUBLISHED');
       }
       let { data, error: dbError } = await query.maybeSingle();
@@ -61,7 +73,7 @@ export default function CaseStudyPage({ onRequestProject, onNavigate }) {
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
       if (!data && isUUID) {
         let idQuery = supabase.from('projects').select('*').eq('id', slug);
-        if (!isPreview) {
+        if (!validPreview) {
           idQuery = idQuery.eq('status', 'PUBLISHED');
         }
         const idResult = await idQuery.maybeSingle();
@@ -91,10 +103,20 @@ export default function CaseStudyPage({ onRequestProject, onNavigate }) {
   };
 
   const handleBackToWork = () => {
+    let categoryMap = {
+      'custom-furniture': 'website',
+      'e-commerce': 'website',
+      'landing-page': 'website',
+      'metaAds': 'metaAds',
+      'meta-ads': 'metaAds'
+    };
+    
+    let section = project?.category ? (categoryMap[project.category] || 'website') : '';
+    
     if (onNavigate) {
-      onNavigate('work');
+      onNavigate('work', section);
     } else {
-      navigate('/work');
+      navigate(section ? `/work#${section}` : '/work');
     }
   };
 

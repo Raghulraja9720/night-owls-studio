@@ -107,7 +107,7 @@ export default function App() {
         window.history.pushState({ page: 'case-study' }, '', targetSection ? `/work/${targetSection}` : '/work');
       } else if (page === 'work') {
         setCurrentPage('work');
-        window.history.pushState({ page: 'work' }, '', '/work');
+        window.history.pushState({ page: 'work' }, '', targetSection ? `/work#${targetSection}` : '/work');
       } else if (['services', 'about', 'team', 'contact'].includes(page)) {
         setCurrentPage(page);
         window.history.pushState({ page }, '', `/${page}`);
