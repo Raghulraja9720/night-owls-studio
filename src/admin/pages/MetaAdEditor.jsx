@@ -164,11 +164,16 @@ export default function MetaAdEditor() {
   const isDirect = isDirectVideo(formData.video_path);
 
   return (
-    <div className="admin-work-page">
+    <div className="admin-meta-ad-editor" style={{ width: '100%', minWidth: 0 }}>
       <div className="admin-page-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link to="/admin/meta-ads" className="admin-btn-secondary" style={{ padding: '0.5rem' }}>
-            <ArrowLeft size={20} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+          <Link 
+            to="/admin/meta-ads" 
+            className="admin-btn-secondary" 
+            style={{ padding: '0.5rem', minWidth: '40px', minHeight: '40px' }}
+            aria-label="Back to Meta Ads"
+          >
+            <ArrowLeft size={18} />
           </Link>
           <h1 className="admin-page-title">{isEditing ? 'Edit Meta Ad' : 'Add New Meta Ad'}</h1>
         </div>
@@ -183,15 +188,15 @@ export default function MetaAdEditor() {
       </div>
 
       {error && (
-        <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--admin-danger)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+        <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--admin-danger)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', wordBreak: 'break-word' }}>
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="admin-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <form onSubmit={handleSubmit} className="admin-meta-ad-form">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minWidth: 0, width: '100%' }}>
           <div className="admin-card">
-            <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', fontWeight: 600 }}>Ad Details</h2>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '1.25rem', fontWeight: 600 }}>Ad Details</h2>
             
             <div className="admin-form-group">
               <label className="admin-label">Title *</label>
@@ -217,7 +222,7 @@ export default function MetaAdEditor() {
                 className="admin-input" 
                 placeholder="https://www.youtube.com/watch?v=..."
               />
-              <p style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.5rem' }}>
+              <p style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.35rem' }}>
                 Paste a YouTube, Vimeo, Facebook, Instagram, TikTok, or direct MP4 URL.
               </p>
             </div>
@@ -234,7 +239,7 @@ export default function MetaAdEditor() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="admin-editor-subgrid">
               <div className="admin-form-group">
                 <label className="admin-label">Business / Client Name (Optional)</label>
                 <input 

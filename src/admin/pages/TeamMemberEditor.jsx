@@ -71,11 +71,16 @@ export default function TeamMemberEditor() {
   };
 
   return (
-    <div className="admin-project-editor">
-      <div className="admin-page-header" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button onClick={() => navigate('/admin/team')} className="admin-btn-secondary" style={{ padding: '0.5rem' }}>
-            <ArrowLeft size={20} />
+    <div className="admin-team-editor" style={{ width: '100%', minWidth: 0 }}>
+      <div className="admin-page-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+          <button 
+            onClick={() => navigate('/admin/team')} 
+            className="admin-btn-secondary" 
+            style={{ padding: '0.5rem', minWidth: '40px', minHeight: '40px' }}
+            aria-label="Back to team members"
+          >
+            <ArrowLeft size={18} />
           </button>
           <h1 className="admin-page-title">{isNew ? 'Add Team Member' : 'Edit Team Member'}</h1>
         </div>
@@ -85,32 +90,25 @@ export default function TeamMemberEditor() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '2rem' }}>
-        <div className="admin-card" style={{ width: '240px', flexShrink: 0, alignSelf: 'flex-start', padding: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div className="admin-editor-layout">
+        <div className="admin-card admin-editor-sidebar">
+          <div className="admin-editor-tabs">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.75rem',
-                  padding: '0.75rem 1rem', borderRadius: '8px', border: 'none',
-                  background: activeTab === tab.id ? 'var(--admin-accent)' : 'transparent',
-                  color: activeTab === tab.id ? 'white' : 'var(--admin-text-muted)',
-                  cursor: 'pointer', textAlign: 'left', fontSize: '0.95rem', fontWeight: 500,
-                  transition: 'all 0.2s'
-                }}
+                className={`admin-editor-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
               >
                 <tab.icon size={18} />
-                {tab.label}
+                <span>{tab.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        <div className="admin-card" style={{ flex: 1, minHeight: '500px' }}>
+        <div className="admin-card admin-editor-content">
           {activeTab === 'overview' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
               <div className="admin-form-group">
                 <label>Full Name</label>
                 <input type="text" className="admin-input" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. John Doe" />

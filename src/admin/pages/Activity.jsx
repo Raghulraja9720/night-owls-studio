@@ -69,33 +69,38 @@ export default function Activity() {
             {logs.map((log, index) => (
               <div 
                 key={log.id} 
+                className="admin-activity-row"
                 style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '1.5rem', 
-                  padding: '1.25rem 1.5rem',
                   borderBottom: index !== logs.length - 1 ? '1px solid var(--admin-border)' : 'none',
                   background: index % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)'
                 }}
               >
-                {/* User Info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '200px', flexShrink: 0 }}>
-                  <div style={{ 
-                    width: '32px', height: '32px', borderRadius: '50%', 
-                    background: 'rgba(255,255,255,0.1)', display: 'flex', 
-                    alignItems: 'center', justifyContent: 'center', color: 'white' 
-                  }}>
-                    <User size={16} />
-                  </div>
-                  <div style={{ overflow: 'hidden' }}>
-                    <div style={{ fontSize: '0.85rem', color: 'white', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                      {log.admin_email}
+                {/* User Info & Time */}
+                <div className="admin-activity-meta-line">
+                  <div className="admin-activity-user">
+                    <div style={{ 
+                      width: '32px', height: '32px', borderRadius: '50%', 
+                      background: 'rgba(255,255,255,0.1)', display: 'flex', 
+                      alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 
+                    }}>
+                      <User size={16} />
                     </div>
+                    <div style={{ overflow: 'hidden', minWidth: 0 }}>
+                      <div style={{ fontSize: '0.85rem', color: 'white', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} title={log.admin_email}>
+                        {log.admin_email}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Timestamp */}
+                  <div className="admin-activity-time">
+                    <Clock size={14} />
+                    <span>{new Date(log.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                 </div>
 
                 {/* Action Badge */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '120px', flexShrink: 0 }}>
+                <div className="admin-activity-action">
                   {getActionIcon(log.action)}
                   <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'white', textTransform: 'capitalize' }}>
                     {log.action}
@@ -103,7 +108,7 @@ export default function Activity() {
                 </div>
 
                 {/* Entity Info */}
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="admin-activity-entity">
                   <span style={{ 
                     padding: '0.2rem 0.5rem', 
                     borderRadius: '4px', 
@@ -111,19 +116,14 @@ export default function Activity() {
                     fontWeight: 600, 
                     border: `1px solid ${getEntityTypeColor(log.entity_type)}`,
                     color: getEntityTypeColor(log.entity_type),
-                    textTransform: 'uppercase'
+                    textTransform: 'uppercase',
+                    whiteSpace: 'nowrap'
                   }}>
                     {log.entity_type}
                   </span>
-                  <span style={{ color: 'var(--admin-text-muted)', fontSize: '0.9rem' }}>
+                  <span style={{ color: 'var(--admin-text-muted)', fontSize: '0.9rem', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                     {log.entity_name}
                   </span>
-                </div>
-
-                {/* Timestamp */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--admin-text-muted)', fontSize: '0.8rem', width: '150px', justifyContent: 'flex-end' }}>
-                  <Clock size={14} />
-                  {new Date(log.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
             ))}

@@ -97,8 +97,11 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="admin-work-page">
-        <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
+      <div className="admin-profile-page">
+        <div className="admin-page-header">
+          <h1 className="admin-page-title">Admin Profile</h1>
+        </div>
+        <div className="admin-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
           Loading profile...
         </div>
       </div>
@@ -106,74 +109,99 @@ export default function Profile() {
   }
 
   return (
-    <div className="admin-work-page">
-      <div className="admin-page-header" style={{ marginBottom: '2rem' }}>
+    <div className="admin-profile-page">
+      <div className="admin-page-header">
         <h1 className="admin-page-title">Admin Profile</h1>
       </div>
 
-      <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+      <div className="admin-profile-grid">
         
         {/* Left Column: Account Details */}
-        <div style={{ flex: '1', minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minWidth: 0, width: '100%' }}>
           
           <div className="admin-card">
-            <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <User size={18} /> Account Details
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '1.25rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+              <User size={18} color="var(--admin-accent)" /> Account Details
             </h2>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px' }}>
-                <div style={{ background: 'var(--admin-accent)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                  {user?.email?.charAt(0).toUpperCase()}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', minWidth: 0 }}>
+              
+              {/* Primary Email: Full-width card */}
+              <div className="admin-profile-card-item" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ 
+                  background: 'var(--admin-accent)', 
+                  width: '46px', 
+                  height: '46px', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  color: 'white', 
+                  fontSize: '1.2rem', 
+                  fontWeight: 'bold',
+                  flexShrink: 0
+                }}>
+                  {user?.email?.charAt(0).toUpperCase() || 'A'}
                 </div>
-                <div>
-                  <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', marginBottom: '0.2rem' }}>Primary Email</div>
-                  <div style={{ color: 'white', fontWeight: 500 }}>{user?.email}</div>
+                <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+                  <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Mail size={13} /> Primary Email
+                  </div>
+                  <div style={{ color: 'white', fontWeight: 600, fontSize: '0.95rem', wordBreak: 'break-all', overflowWrap: 'anywhere' }}>
+                    {user?.email}
+                  </div>
                 </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <div style={{ flex: 1, background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px' }}>
-                  <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    <Shield size={14} /> Role
+              {/* Role & Created: Two equal-width cards, stack on narrow screens */}
+              <div className="admin-profile-meta-row">
+                <div className="admin-profile-card-item">
+                  <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Shield size={14} color="var(--admin-accent)" /> Role
                   </div>
-                  <div style={{ color: 'white', fontWeight: 500 }}>Super Admin</div>
+                  <div style={{ color: 'white', fontWeight: 600, fontSize: '0.95rem' }}>
+                    Super Admin
+                  </div>
                 </div>
                 
-                <div style={{ flex: 1, background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px' }}>
-                  <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    <Calendar size={14} /> Created
+                <div className="admin-profile-card-item">
+                  <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Calendar size={14} color="var(--admin-accent)" /> Created
                   </div>
-                  <div style={{ color: 'white', fontWeight: 500 }}>
-                    {new Date(user?.created_at).toLocaleDateString()}
+                  <div style={{ color: 'white', fontWeight: 600, fontSize: '0.95rem', wordBreak: 'break-word' }}>
+                    {user?.created_at ? new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
                   </div>
                 </div>
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px' }}>
-                <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                  <Clock size={14} /> Last Login
+              {/* Last Login: Full-width card */}
+              <div className="admin-profile-card-item">
+                <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <Clock size={14} color="var(--admin-accent)" /> Last Login
                 </div>
-                <div style={{ color: 'white', fontWeight: 500 }}>
-                  {user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : 'Unknown'}
+                <div style={{ color: 'white', fontWeight: 600, fontSize: '0.95rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                  {user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'Active now'}
                 </div>
               </div>
+
             </div>
           </div>
         </div>
 
         {/* Right Column: Edit Forms */}
-        <div style={{ flex: '1', minWidth: '350px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minWidth: 0, width: '100%' }}>
           
+          {/* Personal Information */}
           <div className="admin-card">
-            <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <User size={18} /> Personal Information
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '1.25rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+              <User size={18} color="var(--admin-accent)" /> Personal Information
             </h2>
             
-            <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
               <div className="admin-form-group">
-                <label>Display Name</label>
+                <label htmlFor="fullName">Display Name</label>
                 <input 
+                  id="fullName"
                   type="text" 
                   className="admin-input" 
                   value={fullName}
@@ -182,63 +210,70 @@ export default function Profile() {
                 />
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div className="admin-form-actions">
                 {profileSuccess ? (
-                  <div style={{ color: 'var(--admin-success)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ color: 'var(--admin-success)', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <CheckCircle2 size={16} /> {profileSuccess}
                   </div>
                 ) : <div />}
                 
                 <button type="submit" className="admin-btn-secondary" disabled={savingProfile}>
-                  <Save size={16} /> {savingProfile ? 'Saving...' : 'Save Profile'}
+                  <Save size={16} />
+                  <span>{savingProfile ? 'Saving...' : 'Save Profile'}</span>
                 </button>
               </div>
             </form>
           </div>
 
+          {/* Update Password */}
           <div className="admin-card">
-            <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Key size={18} /> Update Password
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '1.25rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+              <Key size={18} color="var(--admin-accent)" /> Update Password
             </h2>
             
-            <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
               <div className="admin-form-group">
-                <label>New Password</label>
+                <label htmlFor="newPassword">New Password</label>
                 <input 
+                  id="newPassword"
                   type="password" 
                   className="admin-input" 
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                   placeholder="Enter new password (min 6 characters)" 
+                  autoComplete="new-password"
                 />
               </div>
               
               <div className="admin-form-group">
-                <label>Confirm Password</label>
+                <label htmlFor="confirmPassword">Confirm Password</label>
                 <input 
+                  id="confirmPassword"
                   type="password" 
                   className="admin-input" 
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   placeholder="Confirm new password" 
+                  autoComplete="new-password"
                 />
               </div>
               
               {passwordError && (
-                <div style={{ color: 'var(--admin-danger)', fontSize: '0.9rem', background: 'rgba(239, 68, 68, 0.1)', padding: '0.75rem', borderRadius: '4px' }}>
+                <div style={{ color: 'var(--admin-danger)', fontSize: '0.875rem', background: 'rgba(239, 68, 68, 0.1)', padding: '0.75rem', borderRadius: '6px', border: '1px solid rgba(239, 68, 68, 0.2)', wordBreak: 'break-word' }}>
                   {passwordError}
                 </div>
               )}
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div className="admin-form-actions">
                 {passwordSuccess ? (
-                  <div style={{ color: 'var(--admin-success)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ color: 'var(--admin-success)', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <CheckCircle2 size={16} /> {passwordSuccess}
                   </div>
                 ) : <div />}
                 
                 <button type="submit" className="admin-btn-primary" disabled={savingPassword || !newPassword}>
-                  <Shield size={16} /> {savingPassword ? 'Updating...' : 'Update Password'}
+                  <Shield size={16} />
+                  <span>{savingPassword ? 'Updating...' : 'Update Password'}</span>
                 </button>
               </div>
             </form>

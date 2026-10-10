@@ -7,16 +7,17 @@ import {
   Users, 
   Image as ImageIcon, 
   MessageSquare, 
-  ActivitySquare,
-  LogOut,
-  Menu,
-  X,
-  Mail,
-  User,
-  Bell,
-  Video
+  ActivitySquare, 
+  LogOut, 
+  Menu, 
+  X, 
+  Mail, 
+  User, 
+  Bell, 
+  Video 
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import AdminBottomNav from '../components/AdminBottomNav';
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
@@ -39,9 +40,6 @@ export default function AdminLayout({ session }) {
 
   useEffect(() => {
     fetchNewInquiriesCount();
-    
-    // Optional: Set up an interval to refresh count occasionally, 
-    // or just rely on page navigation. Doing a simple fetch on mount.
   }, []);
 
   const fetchNewInquiriesCount = async () => {
@@ -68,11 +66,18 @@ export default function AdminLayout({ session }) {
     <div className="admin-layout">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div className="admin-sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+        <div 
+          className="admin-sidebar-overlay" 
+          onClick={() => setSidebarOpen(false)} 
+          aria-hidden="true"
+        />
       )}
 
       {/* Sidebar */}
-      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside 
+        className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}
+        aria-label="Admin sidebar navigation"
+      >
         <div className="admin-sidebar-header">
           <div className="admin-brand-wrap">
             <div className="admin-logo-circle">
@@ -83,12 +88,16 @@ export default function AdminLayout({ session }) {
             </div>
             <h2 className="admin-brand">NIGHT OWLS<span>.</span></h2>
           </div>
-          <button className="admin-close-sidebar" onClick={() => setSidebarOpen(false)}>
+          <button 
+            className="admin-close-sidebar" 
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close navigation sidebar"
+          >
             <X size={24} />
           </button>
         </div>
 
-        <nav className="admin-nav">
+        <nav className="admin-nav" aria-label="Sidebar main links">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -113,7 +122,7 @@ export default function AdminLayout({ session }) {
               <span className="admin-user-role">ADMIN</span>
             </div>
           </div>
-          <button className="admin-logout-btn" onClick={handleLogout}>
+          <button className="admin-logout-btn" onClick={handleLogout} aria-label="Sign out of admin">
             <LogOut size={20} />
             <span>Logout</span>
           </button>
@@ -123,9 +132,13 @@ export default function AdminLayout({ session }) {
       {/* Main Content */}
       <div className="admin-main-wrapper">
         <header className="admin-topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button className="admin-menu-toggle" onClick={() => setSidebarOpen(true)}>
-              <Menu size={24} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', minWidth: 0, flex: 1 }}>
+            <button 
+              className="admin-menu-toggle" 
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open sidebar menu"
+            >
+              <Menu size={22} />
             </button>
             <div className="admin-topbar-mobile-brand">
               <div className="admin-logo-circle admin-logo-circle-sm">
@@ -136,10 +149,14 @@ export default function AdminLayout({ session }) {
           </div>
           
           <div className="admin-topbar-right">
-            <button className="admin-notification-btn" onClick={() => navigate('/admin/inquiries')}>
+            <button 
+              className="admin-notification-btn" 
+              onClick={() => navigate('/admin/inquiries')}
+              aria-label={`View inquiries (${newInquiriesCount} new)`}
+            >
               <Bell size={20} />
               {newInquiriesCount > 0 && (
-                <span className="admin-notification-badge">{newInquiriesCount}</span>
+                <span className="admin-notification-badge">{newInquiriesCount > 99 ? '99+' : newInquiriesCount}</span>
               )}
             </button>
           </div>
@@ -148,6 +165,9 @@ export default function AdminLayout({ session }) {
         <main className="admin-main-content">
           <Outlet context={{ session }} />
         </main>
+
+        {/* Mobile Bottom Navigation */}
+        <AdminBottomNav newInquiriesCount={newInquiriesCount} />
       </div>
     </div>
   );

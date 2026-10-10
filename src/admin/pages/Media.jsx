@@ -145,20 +145,22 @@ export default function Media() {
   const filteredFiles = files.filter(f => f.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
-    <div className="admin-work-page">
+    <div className="admin-media-page" style={{ width: '100%', minWidth: 0 }}>
       <div className="admin-page-header">
         <h1 className="admin-page-title">Media Library</h1>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div className="admin-search-bar" style={{ margin: 0, width: '250px' }}>
-            <Search size={18} />
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', minWidth: 0 }}>
+          <div className="admin-search-box" style={{ position: 'relative', flex: 1, minWidth: 'min(100%, 200px)' }}>
+            <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
             <input 
               type="text" 
+              className="admin-input"
               placeholder="Search files..." 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
+              style={{ paddingLeft: '2.5rem', width: '100%' }}
             />
           </div>
-          <button className="admin-btn-primary" onClick={handleUploadClick} disabled={uploading}>
+          <button className="admin-btn-primary" onClick={handleUploadClick} disabled={uploading} style={{ flexShrink: 0 }}>
             {uploading ? <Loader2 size={18} className="spin" /> : <Upload size={18} />}
             <span>{uploading ? 'Uploading...' : 'Upload Media'}</span>
           </button>
@@ -179,18 +181,18 @@ export default function Media() {
             Loading media library...
           </div>
         ) : files.length === 0 ? (
-          <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--admin-text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ padding: '4rem 1rem', textAlign: 'center', color: 'var(--admin-text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
             <ImageIcon size={48} style={{ opacity: 0.2 }} />
             <div>
               <p style={{ marginBottom: '0.5rem', fontWeight: 500, color: 'white' }}>No media files found</p>
               <p style={{ fontSize: '0.9rem' }}>Upload your first image to get started.<br/>(Make sure you have created a public bucket named "media" in Supabase!)</p>
             </div>
             <button className="admin-btn-primary" onClick={handleUploadClick} style={{ marginTop: '1rem' }}>
-              <Upload size={18} /> Upload Image
+              <Upload size={18} /> <span>Upload Image</span>
             </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 180px), 1fr))', gap: '1.25rem', width: '100%', minWidth: 0 }}>
             {filteredFiles.map(file => (
               <div key={file.id} style={{ 
                 background: 'rgba(255,255,255,0.02)', border: '1px solid var(--admin-border)', 

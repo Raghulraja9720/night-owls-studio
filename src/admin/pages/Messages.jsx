@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Mail, Search, Trash2, Archive, CheckCircle, MailOpen, User, X, Plus } from 'lucide-react';
+import { Mail, Search, Trash2, Archive, CheckCircle, MailOpen, User, X, Plus, ArrowLeft } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 export default function Messages() {
@@ -117,12 +117,12 @@ export default function Messages() {
         </button>
       </div>
 
-      <div className="admin-card" style={{ padding: 0, overflow: 'hidden', display: 'flex', minHeight: '600px' }}>
+      <div className="admin-messages-layout">
         
         {/* Left Sidebar: List */}
-        <div style={{ width: '350px', borderRight: '1px solid var(--admin-border)', display: 'flex', flexDirection: 'column', background: 'rgba(255,255,255,0.01)' }}>
+        <div className={`admin-messages-list-pane ${selectedMessage ? 'hidden-on-mobile' : ''}`}>
           <div style={{ padding: '1rem', borderBottom: '1px solid var(--admin-border)' }}>
-            <div className="admin-search-box" style={{ position: 'relative', marginBottom: '1rem' }}>
+            <div className="admin-search-box" style={{ position: 'relative', marginBottom: '1rem', width: '100%' }}>
               <Search size={16} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
               <input 
                 type="text" 
@@ -134,22 +134,22 @@ export default function Messages() {
               />
             </div>
             
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
               <button 
                 onClick={() => setFilter('ALL')}
-                style={{ flex: 1, padding: '0.4rem', fontSize: '0.75rem', borderRadius: '4px', border: 'none', background: filter === 'ALL' ? 'rgba(255,255,255,0.1)' : 'transparent', color: filter === 'ALL' ? 'white' : 'var(--admin-text-muted)', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '0.5rem 0.25rem', fontSize: '0.75rem', borderRadius: '4px', border: 'none', background: filter === 'ALL' ? 'rgba(255,255,255,0.1)' : 'transparent', color: filter === 'ALL' ? 'white' : 'var(--admin-text-muted)', cursor: 'pointer', minHeight: '36px' }}
               >
                 Inbox
               </button>
               <button 
                 onClick={() => setFilter('UNREAD')}
-                style={{ flex: 1, padding: '0.4rem', fontSize: '0.75rem', borderRadius: '4px', border: 'none', background: filter === 'UNREAD' ? 'rgba(255,255,255,0.1)' : 'transparent', color: filter === 'UNREAD' ? 'white' : 'var(--admin-text-muted)', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '0.5rem 0.25rem', fontSize: '0.75rem', borderRadius: '4px', border: 'none', background: filter === 'UNREAD' ? 'rgba(255,255,255,0.1)' : 'transparent', color: filter === 'UNREAD' ? 'white' : 'var(--admin-text-muted)', cursor: 'pointer', minHeight: '36px' }}
               >
                 Unread
               </button>
               <button 
                 onClick={() => setFilter('ARCHIVED')}
-                style={{ flex: 1, padding: '0.4rem', fontSize: '0.75rem', borderRadius: '4px', border: 'none', background: filter === 'ARCHIVED' ? 'rgba(255,255,255,0.1)' : 'transparent', color: filter === 'ARCHIVED' ? 'white' : 'var(--admin-text-muted)', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '0.5rem 0.25rem', fontSize: '0.75rem', borderRadius: '4px', border: 'none', background: filter === 'ARCHIVED' ? 'rgba(255,255,255,0.1)' : 'transparent', color: filter === 'ARCHIVED' ? 'white' : 'var(--admin-text-muted)', cursor: 'pointer', minHeight: '36px' }}
               >
                 Archive
               </button>
@@ -175,10 +175,10 @@ export default function Messages() {
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: msg.status === 'UNREAD' ? 600 : 500, color: 'white' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: msg.status === 'UNREAD' ? 600 : 500, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {msg.sender_email.split('@')[0]}
                     </span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)', flexShrink: 0, marginLeft: '0.5rem' }}>
                       {new Date(msg.created_at).toLocaleDateString()}
                     </span>
                   </div>
@@ -195,52 +195,66 @@ export default function Messages() {
         </div>
 
         {/* Right Content: Message View */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--admin-bg)' }}>
+        <div className={`admin-messages-view-pane ${!selectedMessage ? 'hidden-on-mobile' : ''}`}>
           {selectedMessage ? (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
               {/* Message Header */}
-              <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--admin-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--admin-border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button 
+                    onClick={() => setSelectedMessage(null)} 
+                    className="admin-btn-secondary" 
+                    style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', minHeight: '36px' }}
+                  >
+                    <ArrowLeft size={16} /> Back to Messages
+                  </button>
+
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {selectedMessage.status !== 'UNREAD' && (
+                      <button onClick={(e) => updateStatus(selectedMessage.id, 'UNREAD', e)} className="admin-btn-secondary" style={{ padding: '0.5rem', minWidth: '40px', minHeight: '40px' }} title="Mark Unread" aria-label="Mark Unread">
+                        <Mail size={16} />
+                      </button>
+                    )}
+                    {selectedMessage.status !== 'ARCHIVED' && (
+                      <button onClick={(e) => updateStatus(selectedMessage.id, 'ARCHIVED', e)} className="admin-btn-secondary" style={{ padding: '0.5rem', minWidth: '40px', minHeight: '40px' }} title="Archive" aria-label="Archive">
+                        <Archive size={16} />
+                      </button>
+                    )}
+                    <button onClick={(e) => deleteMessage(selectedMessage.id, e)} className="admin-btn-secondary" style={{ padding: '0.5rem', minWidth: '40px', minHeight: '40px', color: 'var(--admin-danger)', borderColor: 'rgba(239, 68, 68, 0.2)' }} title="Delete" aria-label="Delete message">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+
                 <div>
-                  <h2 style={{ fontSize: '1.25rem', color: 'white', margin: '0 0 1rem 0' }}>{selectedMessage.title}</h2>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                  <h2 style={{ fontSize: '1.25rem', color: 'white', margin: '0 0 0.75rem 0', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+                    {selectedMessage.title}
+                  </h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>
                       <User size={16} />
                     </div>
-                    <div>
-                      <div style={{ fontSize: '0.9rem', color: 'white', fontWeight: 500 }}>{selectedMessage.sender_email}</div>
+                    <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                      <div style={{ fontSize: '0.9rem', color: 'white', fontWeight: 500, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+                        {selectedMessage.sender_email}
+                      </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
                         {new Date(selectedMessage.created_at).toLocaleString()}
                       </div>
                     </div>
                   </div>
                 </div>
-                
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  {selectedMessage.status !== 'UNREAD' && (
-                    <button onClick={(e) => updateStatus(selectedMessage.id, 'UNREAD', e)} className="admin-btn-secondary" style={{ padding: '0.5rem' }} title="Mark Unread">
-                      <Mail size={16} />
-                    </button>
-                  )}
-                  {selectedMessage.status !== 'ARCHIVED' && (
-                    <button onClick={(e) => updateStatus(selectedMessage.id, 'ARCHIVED', e)} className="admin-btn-secondary" style={{ padding: '0.5rem' }} title="Archive">
-                      <Archive size={16} />
-                    </button>
-                  )}
-                  <button onClick={(e) => deleteMessage(selectedMessage.id, e)} className="admin-btn-secondary" style={{ padding: '0.5rem', color: 'var(--admin-danger)', borderColor: 'rgba(239, 68, 68, 0.2)' }} title="Delete">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
               </div>
               
               {/* Message Body */}
-              <div style={{ padding: '2rem', flex: 1, overflowY: 'auto', color: 'white', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+              <div style={{ padding: '1.5rem', flex: 1, overflowY: 'auto', color: 'white', lineHeight: '1.6', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                 {selectedMessage.body}
               </div>
             </div>
           ) : (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-text-muted)' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-text-muted)', padding: '3rem 1rem' }}>
               <MailOpen size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
-              <p>Select a message to read</p>
+              <p style={{ textAlign: 'center' }}>Select a message to read</p>
             </div>
           )}
         </div>
@@ -248,23 +262,19 @@ export default function Messages() {
 
       {/* Compose Modal */}
       {isComposing && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(3, 7, 18, 0.8)', backdropFilter: 'blur(4px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 1000, padding: '2rem'
-        }}>
-          <div className="admin-card" style={{ width: '100%', maxWidth: '600px', padding: '2rem', position: 'relative' }}>
+        <div className="admin-modal-overlay">
+          <div className="admin-modal-card" style={{ maxWidth: '600px' }}>
             <button 
               onClick={() => setIsComposing(false)} 
-              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer' }}
+              aria-label="Close compose modal"
+              style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              <X size={24} />
+              <X size={22} />
             </button>
             
-            <h2 style={{ fontSize: '1.25rem', color: 'white', marginBottom: '1.5rem' }}>New Team Message</h2>
+            <h2 style={{ fontSize: '1.25rem', color: 'white', margin: 0 }}>New Team Message</h2>
             
-            <form onSubmit={handleSendMessage} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <form onSubmit={handleSendMessage} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div className="admin-form-group">
                 <label>Subject</label>
                 <input 
@@ -289,7 +299,7 @@ export default function Messages() {
                 />
               </div>
               
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                 <button type="button" className="admin-btn-secondary" onClick={() => setIsComposing(false)}>
                   Cancel
                 </button>

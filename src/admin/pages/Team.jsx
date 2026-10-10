@@ -44,7 +44,7 @@ export default function Team() {
   );
 
   return (
-    <div className="admin-work-page">
+    <div className="admin-team-page" style={{ width: '100%', minWidth: 0 }}>
       <div className="admin-page-header">
         <h1 className="admin-page-title">Team Members</h1>
         <Link to="/admin/team/new" className="admin-btn-primary">
@@ -54,8 +54,8 @@ export default function Team() {
       </div>
 
       <div className="admin-card">
-        <div className="admin-table-toolbar" style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
-          <div className="admin-search-box" style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+        <div className="admin-table-toolbar">
+          <div className="admin-search-box" style={{ position: 'relative', flex: 1, minWidth: 'min(100%, 260px)' }}>
             <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
             <input 
               type="text" 
@@ -68,15 +68,15 @@ export default function Team() {
           </div>
         </div>
 
-        <div className="admin-table-container" style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="admin-table-container">
+          <table style={{ width: '100%', minWidth: '580px', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--admin-border)' }}>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Name</th>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Role</th>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Status</th>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Order</th>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500, textAlign: 'right' }}>Actions</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Name</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Role</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Status</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Order</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500, textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -91,34 +91,35 @@ export default function Team() {
               ) : (
                 filteredMembers.map(member => (
                   <tr key={member.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td style={{ padding: '1rem', fontWeight: 500 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--admin-border)', overflow: 'hidden' }}>
+                    <td style={{ padding: '0.875rem 1rem', fontWeight: 500 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'var(--admin-border)', overflow: 'hidden', flexShrink: 0 }}>
                            {member.image ? <img src={member.image} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : null}
                         </div>
-                        {member.name}
+                        <span style={{ wordBreak: 'break-word' }}>{member.name}</span>
                       </div>
                     </td>
-                    <td style={{ padding: '1rem', color: 'var(--admin-text-muted)' }}>{member.role}</td>
-                    <td style={{ padding: '1rem' }}>
+                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', wordBreak: 'break-word' }}>{member.role}</td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
                       <span style={{ 
-                        padding: '0.25rem 0.75rem', 
+                        padding: '0.25rem 0.65rem', 
                         borderRadius: '999px', 
-                        fontSize: '0.8rem',
+                        fontSize: '0.75rem',
                         fontWeight: 600,
                         background: member.status === 'PUBLISHED' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 255, 255, 0.1)',
-                        color: member.status === 'PUBLISHED' ? 'var(--admin-success)' : 'var(--admin-text-muted)'
+                        color: member.status === 'PUBLISHED' ? 'var(--admin-success)' : 'var(--admin-text-muted)',
+                        whiteSpace: 'nowrap'
                       }}>
                         {member.status}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem', color: 'var(--admin-text-muted)' }}>{member.display_order}</td>
-                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)' }}>{member.display_order}</td>
+                    <td style={{ padding: '0.875rem 1rem', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                        <Link to={`/admin/team/${member.id}`} className="admin-btn-secondary" style={{ padding: '0.5rem' }}>
+                        <Link to={`/admin/team/${member.id}`} className="admin-btn-secondary" style={{ padding: '0.45rem', minHeight: '36px' }} title="Edit" aria-label={`Edit ${member.name}`}>
                           <Edit2 size={16} />
                         </Link>
-                        <button onClick={() => deleteMember(member.id)} className="admin-btn-secondary" style={{ padding: '0.5rem', borderColor: 'rgba(239, 68, 68, 0.2)', color: 'var(--admin-danger)' }}>
+                        <button onClick={() => deleteMember(member.id)} className="admin-btn-secondary" style={{ padding: '0.45rem', minHeight: '36px', borderColor: 'rgba(239, 68, 68, 0.2)', color: 'var(--admin-danger)' }} title="Delete" aria-label={`Delete ${member.name}`}>
                           <Trash2 size={16} />
                         </button>
                       </div>

@@ -73,11 +73,16 @@ export default function ServiceEditor() {
   };
 
   return (
-    <div className="admin-project-editor">
-      <div className="admin-page-header" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button onClick={() => navigate('/admin/services')} className="admin-btn-secondary" style={{ padding: '0.5rem' }}>
-            <ArrowLeft size={20} />
+    <div className="admin-service-editor" style={{ width: '100%', minWidth: 0 }}>
+      <div className="admin-page-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+          <button 
+            onClick={() => navigate('/admin/services')} 
+            className="admin-btn-secondary" 
+            style={{ padding: '0.5rem', minWidth: '40px', minHeight: '40px' }}
+            aria-label="Back to services"
+          >
+            <ArrowLeft size={18} />
           </button>
           <h1 className="admin-page-title">{isNew ? 'Create Service' : 'Edit Service'}</h1>
         </div>
@@ -87,32 +92,25 @@ export default function ServiceEditor() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '2rem' }}>
-        <div className="admin-card" style={{ width: '240px', flexShrink: 0, alignSelf: 'flex-start', padding: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div className="admin-editor-layout">
+        <div className="admin-card admin-editor-sidebar">
+          <div className="admin-editor-tabs">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.75rem',
-                  padding: '0.75rem 1rem', borderRadius: '8px', border: 'none',
-                  background: activeTab === tab.id ? 'var(--admin-accent)' : 'transparent',
-                  color: activeTab === tab.id ? 'white' : 'var(--admin-text-muted)',
-                  cursor: 'pointer', textAlign: 'left', fontSize: '0.95rem', fontWeight: 500,
-                  transition: 'all 0.2s'
-                }}
+                className={`admin-editor-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
               >
                 <tab.icon size={18} />
-                {tab.label}
+                <span>{tab.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        <div className="admin-card" style={{ flex: 1, minHeight: '500px' }}>
+        <div className="admin-card admin-editor-content">
           {activeTab === 'overview' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
               <div className="admin-form-group">
                 <label>Service Title</label>
                 <input type="text" className="admin-input" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Website Development" />
@@ -120,18 +118,18 @@ export default function ServiceEditor() {
               <div className="admin-form-group">
                 <label>Slug</label>
                 <input type="text" className="admin-input" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} placeholder="e.g. website-development" />
-                <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.5rem', display: 'block' }}>Leave blank to auto-generate from title.</span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.35rem', display: 'block' }}>Leave blank to auto-generate from title.</span>
               </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <div className="admin-form-group" style={{ flex: 1 }}>
+              <div className="admin-editor-subgrid">
+                <div className="admin-form-group">
                   <label>Icon Identifier</label>
                   <input type="text" className="admin-input" value={formData.icon} onChange={e => setFormData({...formData, icon: e.target.value})} placeholder="e.g. Globe" />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.5rem', display: 'block' }}>Lucide icon name.</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.35rem', display: 'block' }}>Lucide icon name.</span>
                 </div>
-                <div className="admin-form-group" style={{ flex: 1 }}>
+                <div className="admin-form-group">
                   <label>Button Text (CTA)</label>
                   <input type="text" className="admin-input" value={formData.cta_text || ''} onChange={e => setFormData({...formData, cta_text: e.target.value})} placeholder="e.g. Learn More" />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.5rem', display: 'block' }}>Text for the action button.</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', marginTop: '0.35rem', display: 'block' }}>Text for the action button.</span>
                 </div>
               </div>
             </div>

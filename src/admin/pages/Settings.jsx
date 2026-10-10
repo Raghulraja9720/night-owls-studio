@@ -109,7 +109,7 @@ export default function Settings() {
         <h1 className="admin-page-title">Site Settings</h1>
       </div>
 
-      <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '4rem' }}>
+      <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: 'calc(8rem + env(safe-area-inset-bottom, 0px))' }}>
         
         {/* General Settings */}
         <div className="admin-card">
@@ -117,7 +117,7 @@ export default function Settings() {
             <Globe size={18} /> General Information
           </h2>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="admin-editor-subgrid">
             <div className="admin-form-group">
               <label>Studio Name</label>
               <input 
@@ -150,7 +150,7 @@ export default function Settings() {
             <Phone size={18} /> Phone & WhatsApp
           </h2>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="admin-editor-subgrid">
             <div className="admin-form-group">
               <label>Display Phone Number (e.g. +91 85318 07705)</label>
               <input 
@@ -256,16 +256,10 @@ export default function Settings() {
         </div>
 
         {/* Floating Save Action */}
-        <div style={{
-          position: 'fixed', bottom: 0, left: '260px', right: 0, 
-          background: 'rgba(3, 7, 18, 0.9)', backdropFilter: 'blur(10px)',
-          borderTop: '1px solid var(--admin-border)',
-          padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          zIndex: 100
-        }}>
+        <div className="admin-floating-save-bar">
           <div>
             {success && (
-              <div style={{ color: 'var(--admin-success)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ color: 'var(--admin-success)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
                 <CheckCircle2 size={16} /> {success}
               </div>
             )}

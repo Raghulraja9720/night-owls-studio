@@ -41,7 +41,7 @@ export default function Work() {
   const filteredProjects = projects.filter(p => p.title?.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="admin-work-page">
+    <div className="admin-work-page" style={{ width: '100%', minWidth: 0 }}>
       <div className="admin-page-header">
         <h1 className="admin-page-title">Our Work</h1>
         <Link to="/admin/work/new" className="admin-btn-primary">
@@ -51,8 +51,8 @@ export default function Work() {
       </div>
 
       <div className="admin-card">
-        <div className="admin-table-toolbar" style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
-          <div className="admin-search-box" style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+        <div className="admin-table-toolbar">
+          <div className="admin-search-box" style={{ position: 'relative', flex: 1, minWidth: 'min(100%, 260px)' }}>
             <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
             <input 
               type="text" 
@@ -65,15 +65,15 @@ export default function Work() {
           </div>
         </div>
 
-        <div className="admin-table-container" style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="admin-table-container">
+          <table style={{ width: '100%', minWidth: '580px', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--admin-border)' }}>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Project</th>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Category</th>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Status</th>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Featured</th>
-                <th style={{ padding: '1rem', color: 'var(--admin-text-muted)', fontWeight: 500, textAlign: 'right' }}>Actions</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Project</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Category</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Status</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500 }}>Featured</th>
+                <th style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', fontWeight: 500, textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -88,29 +88,30 @@ export default function Work() {
               ) : (
                 filteredProjects.map(project => (
                   <tr key={project.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td style={{ padding: '1rem', fontWeight: 500 }}>{project.title}</td>
-                    <td style={{ padding: '1rem', color: 'var(--admin-text-muted)' }}>{project.category}</td>
-                    <td style={{ padding: '1rem' }}>
+                    <td style={{ padding: '0.875rem 1rem', fontWeight: 500, wordBreak: 'break-word' }}>{project.title}</td>
+                    <td style={{ padding: '0.875rem 1rem', color: 'var(--admin-text-muted)', wordBreak: 'break-word' }}>{project.category}</td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
                       <span style={{ 
-                        padding: '0.25rem 0.75rem', 
+                        padding: '0.25rem 0.65rem', 
                         borderRadius: '999px', 
-                        fontSize: '0.8rem',
+                        fontSize: '0.75rem',
                         fontWeight: 600,
                         background: project.status === 'PUBLISHED' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 255, 255, 0.1)',
-                        color: project.status === 'PUBLISHED' ? 'var(--admin-success)' : 'var(--admin-text-muted)'
+                        color: project.status === 'PUBLISHED' ? 'var(--admin-success)' : 'var(--admin-text-muted)',
+                        whiteSpace: 'nowrap'
                       }}>
                         {project.status}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem' }}>
-                      {project.featured ? <span style={{ color: 'var(--admin-warning)' }}>★ Yes</span> : <span style={{ color: 'var(--admin-text-muted)' }}>No</span>}
+                    <td style={{ padding: '0.875rem 1rem', whiteSpace: 'nowrap' }}>
+                      {project.featured ? <span style={{ color: 'var(--admin-warning)', fontWeight: 600 }}>★ Yes</span> : <span style={{ color: 'var(--admin-text-muted)' }}>No</span>}
                     </td>
-                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                    <td style={{ padding: '0.875rem 1rem', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                        <Link to={`/admin/work/${project.id}`} className="admin-btn-secondary" style={{ padding: '0.5rem' }}>
+                        <Link to={`/admin/work/${project.id}`} className="admin-btn-secondary" style={{ padding: '0.45rem', minHeight: '36px' }} title="Edit" aria-label={`Edit ${project.title}`}>
                           <Edit2 size={16} />
                         </Link>
-                        <button onClick={() => deleteProject(project.id)} className="admin-btn-secondary" style={{ padding: '0.5rem', borderColor: 'rgba(239, 68, 68, 0.2)', color: 'var(--admin-danger)' }}>
+                        <button onClick={() => deleteProject(project.id)} className="admin-btn-secondary" style={{ padding: '0.45rem', minHeight: '36px', borderColor: 'rgba(239, 68, 68, 0.2)', color: 'var(--admin-danger)' }} title="Delete" aria-label={`Delete ${project.title}`}>
                           <Trash2 size={16} />
                         </button>
                       </div>

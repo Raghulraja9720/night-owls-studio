@@ -84,26 +84,26 @@ export default function Dashboard() {
 
   return (
     <div className="admin-dashboard">
-      <div className="admin-page-header" style={{ marginBottom: '2rem' }}>
+      <div className="admin-page-header">
         <h1 className="admin-page-title">Dashboard Overview</h1>
         
         {/* Quick Actions Menu */}
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <button onClick={() => navigate('/admin/work/new')} className="admin-btn-primary" style={{ padding: '0.6rem 1rem' }}>
-            <Plus size={16} /> New Project
+            <Plus size={16} /> <span>New Project</span>
           </button>
           <button onClick={() => navigate('/admin/inquiries')} className="admin-btn-secondary" style={{ padding: '0.6rem 1rem' }}>
-            <Mail size={16} /> View Inquiries
+            <Mail size={16} /> <span>View Inquiries</span>
           </button>
         </div>
       </div>
 
       {/* Primary Statistics Grid */}
-      <div className="admin-grid-cards" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', marginBottom: '2rem' }}>
+      <div className="admin-grid-cards">
         <div className="admin-stat-card" onClick={() => navigate('/admin/work')} style={{ cursor: 'pointer' }}>
           <div className="admin-stat-info">
             <h3>Total Projects</h3>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.75rem', flexWrap: 'wrap' }}>
               <p style={{ fontSize: '2rem', margin: 0, lineHeight: 1 }}>{loading ? '-' : stats.totalProjects}</p>
               <span style={{ fontSize: '0.85rem', color: 'var(--admin-success)', marginBottom: '4px' }}>{stats.publishedProjects} Published</span>
             </div>
@@ -147,20 +147,20 @@ export default function Dashboard() {
       </div>
 
       {/* Secondary Grid: Recent Activity */}
-      <div className="admin-grid-cards" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))' }}>
+      <div className="admin-dashboard-panels">
         
         {/* Recent Inquiries Panel */}
         <div className="admin-card" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-              <Clock size={18} /> Recent Inquiries
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, fontSize: '1.05rem', fontWeight: 600 }}>
+              <Clock size={18} color="var(--admin-accent)" /> Recent Inquiries
             </h3>
             <Link to="/admin/inquiries" style={{ color: 'var(--admin-accent)', fontSize: '0.85rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
               View All <ArrowRight size={14} />
             </Link>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1, minWidth: 0 }}>
             {loading ? (
               <div style={{ color: 'var(--admin-text-muted)', textAlign: 'center', padding: '2rem' }}>Loading...</div>
             ) : recentInquiries.length === 0 ? (
@@ -171,15 +171,15 @@ export default function Dashboard() {
               recentInquiries.map(inquiry => (
                 <div key={inquiry.id} onClick={() => navigate('/admin/inquiries')} style={{ 
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-                  padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', cursor: 'pointer',
+                  padding: '0.875rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', cursor: 'pointer',
                   borderLeft: inquiry.status === 'NEW' ? '3px solid var(--admin-warning)' : '3px solid transparent',
-                  transition: 'background 0.2s'
+                  transition: 'background 0.2s', gap: '0.75rem', minWidth: 0
                 }}>
-                  <div>
-                    <div style={{ color: 'white', fontWeight: 500, marginBottom: '0.25rem' }}>{inquiry.name}</div>
-                    <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem' }}>{inquiry.service}</div>
+                  <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+                    <div style={{ color: 'white', fontWeight: 500, marginBottom: '0.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{inquiry.name}</div>
+                    <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{inquiry.service}</div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
                     <span style={{ 
                       padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 600,
                       background: getStatusColor(inquiry.status).bg, color: getStatusColor(inquiry.status).color,
@@ -199,16 +199,16 @@ export default function Dashboard() {
 
         {/* Recent Projects Panel */}
         <div className="admin-card" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-              <FileText size={18} /> Recently Added Projects
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, fontSize: '1.05rem', fontWeight: 600 }}>
+              <FileText size={18} color="var(--admin-accent)" /> Recently Added Projects
             </h3>
             <Link to="/admin/work" style={{ color: 'var(--admin-accent)', fontSize: '0.85rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
               View All <ArrowRight size={14} />
             </Link>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1, minWidth: 0 }}>
             {loading ? (
               <div style={{ color: 'var(--admin-text-muted)', textAlign: 'center', padding: '2rem' }}>Loading...</div>
             ) : recentProjects.length === 0 ? (
@@ -219,18 +219,19 @@ export default function Dashboard() {
               recentProjects.map(project => (
                 <div key={project.id} onClick={() => navigate(`/admin/work/${project.id}`)} style={{ 
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-                  padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', cursor: 'pointer',
-                  transition: 'background 0.2s'
+                  padding: '0.875rem 1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', cursor: 'pointer',
+                  transition: 'background 0.2s', gap: '0.75rem', minWidth: 0
                 }}>
-                  <div>
-                    <div style={{ color: 'white', fontWeight: 500, marginBottom: '0.25rem' }}>{project.title}</div>
+                  <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+                    <div style={{ color: 'white', fontWeight: 500, marginBottom: '0.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{project.title}</div>
                     <div style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem' }}>
                       Added {new Date(project.created_at).toLocaleDateString()}
                     </div>
                   </div>
                   <span style={{ 
                     padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 600,
-                    background: getStatusColor(project.status).bg, color: getStatusColor(project.status).color
+                    background: getStatusColor(project.status).bg, color: getStatusColor(project.status).color,
+                    flexShrink: 0
                   }}>
                     {project.status}
                   </span>
