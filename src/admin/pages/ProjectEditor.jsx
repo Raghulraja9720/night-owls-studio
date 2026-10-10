@@ -512,6 +512,25 @@ export default function ProjectEditor() {
           {/* TAB 3: MEDIA (COVER IMAGE + GALLERY) */}
           {activeTab === 'media' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%' }}>
+              {/* URL-Only Workflow & Local Screenshot Limitation Notice */}
+              <div style={{
+                background: 'rgba(59, 130, 246, 0.08)',
+                border: '1px solid rgba(59, 130, 246, 0.25)',
+                borderRadius: '8px',
+                padding: '0.85rem 1rem',
+                fontSize: '0.82rem',
+                color: '#e2e8f0',
+                lineHeight: 1.5
+              }}>
+                <strong style={{ color: '#93c5fd', display: 'block', marginBottom: '0.2rem' }}>
+                  URL-Only Image Workflow:
+                </strong>
+                Paste public image URLs from any host (Unsplash, Cloudinary, ImgBB, custom CDN, signed URLs, or Supabase Storage). No uploads to GitHub or repository files required.
+                <div style={{ marginTop: '0.35rem', color: '#cbd5e1' }}>
+                  <strong>Important limitation:</strong> A URL-only workflow requires an accessible public URL. If an image exists only on your device (e.g. local screenshot), host it on an external service before pasting. Also note that webpage share links (Google Drive viewer, Dropbox share page, Imgur gallery) return HTML and cannot be decoded inside image tags.
+                </div>
+              </div>
+
               {/* SECTION: COVER IMAGE */}
               <div style={{ paddingBottom: '1.5rem', borderBottom: '1px solid var(--admin-border)' }}>
                 <h3 style={{ fontSize: '1.05rem', color: 'white', margin: '0 0 0.5rem 0' }}>
@@ -539,6 +558,7 @@ export default function ProjectEditor() {
                     url={formData.cover_image}
                     label="Cover Image Preview"
                     onRemove={() => setFormData({ ...formData, cover_image: '' })}
+                    onApplyDirectUrl={(direct) => setFormData({ ...formData, cover_image: direct })}
                     aspectRatio="16/9"
                   />
                 )}
